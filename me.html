@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 我的</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 我的</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const confirmedDone = alarms.filter(a=>a.status==='confirmed'||a.status==='closed').length;
+
+const body = `
+  <div class="me-head">
+    <div class="ava">👷</div>
+    <div>
+      <div class="nm">${currentUser()}</div>
+      <div class="rl">巡查员 · 龙岗区住建局 · 工号 LG-0426</div>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-cell"><div class="v" style="color:var(--primary)">${confirmedDone+18}</div><div class="l">本月确认</div></div>
+    <div class="stat-cell"><div class="v" style="color:var(--ok)">23</div><div class="l">本月闭环</div></div>
+  </div>
+  <div class="list-card">
+    <div class="list-row" onclick="go('drafts.html')"><div class="li">📥</div><div class="lt">离线草稿箱<small>弱网拍照自动暂存，回网补传</small></div><div class="lv">0 条</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="go('tasks.html')"><div class="li">✅</div><div class="lt">任务与待复查</div><div class="lv">2 待办</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：我负责的相机点位 40 个')"><div class="li">📷</div><div class="lt">我的相机点位</div><div class="lv">40 个</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：报警推送实时')"><div class="li">🔔</div><div class="lt">报警推送设置</div><div class="lv">实时</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：切换工作空间 / 多租户隔离')"><div class="li">🏢</div><div class="lt">切换工作空间</div><div class="lv">龙岗区住建局</div><div class="chev">›</div></div>
+  </div>
+  <div class="list-card">
+    <div class="list-row" onclick="go('laws.html')"><div class="li">📖</div><div class="lt">法规库 / 判据</div><div class="lv">255 条</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="go('qa.html')"><div class="li">💬</div><div class="lt">AI 法规问答</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：问题反馈，系统留痕可追溯')"><div class="li">🐞</div><div class="lt">问题反馈</div><div class="chev">›</div></div>
+  </div>
+  <div class="list-card">
+    <div class="list-row" onclick="resetDemo()"><div class="li">♻</div><div class="lt" style="color:var(--info)">重置演示数据</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="logout()"><div class="li">🚪</div><div class="lt" style="color:var(--major)">退出登录</div><div class="chev">›</div></div>
+  </div>
+`;
+
+renderApp({title:'我的', tab:'me', body});
+
+function resetDemo(){ resetAlarms(); toast('已重置为初始演示数据'); setTimeout(()=>go('home.html'),700); }
+function logout(){ sessionStorage.removeItem('axt_user'); sessionStorage.removeItem('axt_role'); go('login.html'); }
+</script>
+</body>
+</html>

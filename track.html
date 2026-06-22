@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 闭环追踪</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 闭环追踪</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const a = getAlarm(getParam('id'));
+if(!a){ go('alarms.html'); }
+const t = TYPE[a.type];
+const closed = a.status==='closed';
+
+function imgHTML(){
+  return `${sceneSVG()}
+    <div class="bbox ${a.level}" data-label="${t.name}" style="left:${a.box.x}%;top:${a.box.y}%;width:${a.box.w}%;height:${a.box.h}%">
+      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span></div>
+    <div class="meta-bar"><span class="liveflag">● 相机抓拍</span><span>${a.device.split(' (')[0]}</span><span style="margin-left:auto">${a.time}</span></div>`;
+}
+
+const steps=[
+  {t:'相机 AI 识别报警', d:a.time+' · 置信 '+a.conf+'%', st:'done'},
+  {t:'巡查员复核确认', d:'确认违规属实', st:'done'},
+  {t:'开具整改通知书', d:closed?'已送达施工方':'待签字开具', st:closed?'done':'cur'},
+  {t:'施工方整改上报', d:closed?'已提交整改反馈':'待施工方处理', st:closed?'done':'todo'},
+  {t:'复查闭环归档', d:closed?'复查合格，已归档':'待复查', st:closed?'done':'todo'}
+];
+
+const body = `
+  <div class="detail-img">${imgHTML()}</div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">🔁 整改闭环进度</div>
+    <div class="timeline">
+      ${steps.map(s=>`<div class="tl ${s.st}"><div class="tt">${s.t}</div><div class="td">${s.d}</div></div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">📄 隐患信息</div>
+    <div class="kv"><div class="k">隐患名称</div><div class="v">${t.name}</div></div>
+    <div class="kv"><div class="k">等级时限</div><div class="v">${LVNAME[a.level]} · ${DEADLINE[a.level]} 天内整改</div></div>
+    <div class="kv"><div class="k">点位设备</div><div class="v">${a.device}</div></div>
+    <div class="kv"><div class="k">所属区域</div><div class="v">${a.org}</div></div>
+    <div class="kv"><div class="k">复核备注</div><div class="v">${a.note||'—'}</div></div>
+  </div>
+  ${closed
+    ? `<button class="btn btn-line" onclick="go('stats.html')">查看统计看板 ›</button>`
+    : `<button class="btn btn-ok" onclick="go('sign.html?id=${a.id}')">生成《隐患整改通知书》并送达</button>`}
+  <button class="btn btn-line" onclick="go('alarms.html')" style="margin-top:10px">‹ 返回报警列表</button>
+`;
+
+renderApp({title:'整改闭环追踪', back:true, body});
+</script>
+</body>
+</html>

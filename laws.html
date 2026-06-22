@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 法规库</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 法规库 / 判据</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const LAWS = [
+  {code:'JGJ 59-2011 第3.11.3条', cat:'个体防护', text:'作业人员进入施工现场应正确佩戴安全帽，系紧下颏带。', note:'《建筑施工安全检查标准》'},
+  {code:'JGJ 80-2016 第4.2节', cat:'临边洞口', text:'临边作业应设置 1.2m 高防护栏杆，洞口应设稳固盖板或防护网。', note:'《建筑施工高处作业安全技术规范》'},
+  {code:'JGJ 80-2016 第3章', cat:'高处作业', text:'高处作业应有可靠立足点与防护设施，禁止无防护登高、站桶作业。', note:'《建筑施工高处作业安全技术规范》'},
+  {code:'JGJ 46-2005 第8章', cat:'临时用电', text:'配电箱、开关箱应做保护接地并设漏电保护，动作电流≤30mA。', note:'《施工现场临时用电安全技术规范》'},
+  {code:'GB 50720-2011', cat:'消防设施', text:'施工现场应按规定配置足够数量灭火器材，易燃区严禁吸烟明火。', note:'《建设工程施工现场消防安全技术规范》'},
+  {code:'JGJ 130-2011', cat:'脚手架', text:'脚手架应按规定设置连墙件，严禁攀爬架体上下。', note:'《建筑施工扣件式钢管脚手架安全技术规范》'},
+  {code:'JGJ 33-2012', cat:'起重吊装', text:'起重吊装作业应设警戒区与专人监护，严禁吊物下站人。', note:'《建筑机械使用安全技术规程》'},
+  {code:'GB 50720-2011 第6章', cat:'消防通道', text:'施工现场应保持消防车道畅通，宽度不小于 4m。', note:'《建设工程施工现场消防安全技术规范》'}
+];
+const CATS = ['全部','个体防护','临边洞口','高处作业','临时用电','消防设施','脚手架','起重吊装'];
+let curCat='全部', kw='';
+
+function render(){
+  const list = LAWS.filter(l=>(curCat==='全部'||l.cat===curCat) && (!kw || (l.text+l.code+l.note).includes(kw)));
+  const cats = CATS.map(c=>`<button class="chip ${c===curCat?'on':''}" onclick="setCat('${c}')">${c}</button>`).join('');
+  const items = list.length ? list.map(l=>`
+    <div class="law-item">
+      <div class="lh"><span class="code">${l.code}</span><span class="cat">${l.cat}</span></div>
+      <div class="lt">${l.text}</div>
+      <div class="ln">${l.note}</div>
+    </div>`).join('') : '<div class="empty"><div class="e-ic">🔍</div><p>未找到匹配判据</p></div>';
+  const body = `
+    <div class="searchbar">🔍 <input id="kw" placeholder="搜索判据 / 法规条文…" value="${kw}" oninput="onKw(this.value)"></div>
+    <div class="filterbar">${cats}</div>
+    <div class="muted tiny" style="margin:0 2px 10px">共 255 条已核对判据 · 演示展示 ${LAWS.length} 条 · 逐字可溯源</div>
+    ${items}
+  `;
+  renderApp({title:'法规库 / 判据', back:true, body});
+  const el=document.getElementById('kw'); if(el && kw){ el.focus(); el.setSelectionRange(kw.length,kw.length); }
+}
+function setCat(c){ curCat=c; render(); }
+let kwTimer;
+function onKw(v){ kw=v; clearTimeout(kwTimer); kwTimer=setTimeout(render,250); }
+render();
+</script>
+</body>
+</html>

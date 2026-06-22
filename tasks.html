@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 任务与待复查</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 任务与待复查</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const TASKS = [
+  {name:'五和社区 · 沿街商铺装修工程巡查', region:'坂田街道 · 五和社区', due:'今日 18:00', st:'doing', stl:'进行中', desc:'安全帽/临边专项核查'},
+  {name:'甘坑社区 · 充电设施安装复查', region:'布吉街道 · 甘坑社区', due:'明日 12:00', st:'todo', stl:'待开始', desc:'整改后复查吸烟隐患是否闭环'},
+  {name:'丹竹头社区 · 基坑支护专项巡查', region:'南湾街道 · 丹竹头社区', due:'已逾期 1 天', st:'overdue', stl:'已逾期', desc:'临边防护未整改，被催办'},
+  {name:'木棉湾社区 · 招牌安装作业巡查', region:'布吉街道 · 木棉湾社区', due:'昨日 已完成', st:'done', stl:'已完成', desc:'安全帽隐患已确认并下发通知书'}
+];
+const TABS=[['all','全部'],['todo','待开始'],['doing','进行中'],['done','已完成'],['overdue','已逾期']];
+let cur='all';
+
+function render(){
+  const list = TASKS.filter(t=>cur==='all'||t.st===cur);
+  const tabs = TABS.map(([k,l])=>`<button class="${k===cur?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
+  const items = list.length ? list.map(t=>`
+    <div class="task-item ${t.st}">
+      <div class="th"><div class="tn">${t.name}</div><span class="tpill ${t.st}">${t.stl}</span></div>
+      <div class="tm">📍 ${t.region}<br>📝 ${t.desc}<br>⏱ 截止：<span class="${t.st==='overdue'?'due':''}">${t.due}</span></div>
+    </div>`).join('') : '<div class="empty"><div class="e-ic">📋</div><p>该分类下暂无任务</p></div>';
+  const body = `
+    <div class="segtab">${tabs}</div>
+    ${items}
+    <div class="card" style="margin-top:4px">
+      <div class="sec-title" style="margin-top:0">任务生命周期</div>
+      <div class="muted tiny" style="line-height:1.9">待开始 → 进行中 → 已完成；超截止自动标红并触发<b style="color:var(--major)">催办</b>。隐患闭环：待整改 → 整改中 → 待复查 → 已闭环（驳回则退回整改中）。</div>
+    </div>
+  `;
+  renderApp({title:'任务与待复查', back:true, body});
+}
+function setTab(k){ cur=k; render(); }
+render();
+</script>
+</body>
+</html>

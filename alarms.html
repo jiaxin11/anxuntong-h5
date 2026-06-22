@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 报警清单</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 报警清单</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+let curFilter = getParam('f') || 'all';
+let curType = 'all';
+
+function cnt(st){ return alarms.filter(a=>a.status===st).length; }
+const statusChips = [
+  ['all','全部',alarms.length],['pending','待确认',cnt('pending')],
+  ['confirmed','已确认',cnt('confirmed')],['closed','已闭环',cnt('closed')],['rejected','已驳回',cnt('rejected')]
+];
+const typeChips = [['all','全类型'],['helmet','🪖 安全帽'],['smoking','🚬 吸烟'],['climb','🧗 攀爬'],['edge','🚧 临边'],['fire','🔥 烟火']];
+
+const body = `
+  <div class="demo-flag">⚠ 相机 AI 自动识别推送 · 项目/地址/隐患均为 <b>脱敏示例数据</b></div>
+  <div class="filterbar" id="statusFilter">
+    ${statusChips.map(([f,l,c])=>`<button class="chip" data-f="${f}" onclick="setFilter('${f}')">${l} <span class="ct">${c}</span></button>`).join('')}
+  </div>
+  <div class="filterbar" id="typeFilter" style="padding-top:0">
+    ${typeChips.map(([t,l])=>`<button class="chip" data-t="${t}" onclick="setTypeFilter('${t}')">${l}</button>`).join('')}
+  </div>
+  <div id="alarmList"></div>
+`;
+
+renderApp({title:'AI 报警清单', tab:'alarms', body});
+renderList();
+
+function setFilter(f){ curFilter=f; renderList(); }
+function setTypeFilter(t){ curType=t; renderList(); }
+function renderList(){
+  document.querySelectorAll('#statusFilter .chip').forEach(c=>c.classList.toggle('on',c.dataset.f===curFilter));
+  document.querySelectorAll('#typeFilter .chip').forEach(c=>c.classList.toggle('on',c.dataset.t===curType));
+  let rows=alarms.slice();
+  if(curFilter!=='all') rows=rows.filter(a=>a.status===curFilter);
+  if(curType!=='all') rows=rows.filter(a=>a.type===curType);
+  const el=document.getElementById('alarmList');
+  el.innerHTML = rows.length ? rows.map(alarmCardHTML).join('')
+    : '<div class="empty"><div class="e-ic">📭</div><p>当前筛选条件下暂无报警</p></div>';
+}
+</script>
+</body>
+</html>

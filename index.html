@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安巡通 H5</title>
+</head>
+<body>
+<script>
+// 入口：已登录直接进工作台，否则去登录页
+location.replace(sessionStorage.getItem('axt_user') ? 'home.html' : 'login.html');
+</script>
+</body>
+</html>

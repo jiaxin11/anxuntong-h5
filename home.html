@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 工作台</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 工作台</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const pend = alarms.filter(a=>a.status==='pending').length;
+const closed = alarms.filter(a=>a.status==='closed').length;
+const active = alarms.filter(a=>a.status!=='rejected').length;
+const closeRate = Math.round(closed/(active||1)*100);
+
+const topPending = alarms.filter(a=>a.status==='pending').slice(0,3);
+const homeList = topPending.length
+  ? topPending.map(alarmCardHTML).join('')
+  : '<div class="empty"><div class="e-ic">✅</div><p>暂无待确认报警，全部已处理</p></div>';
+
+const body = `
+  <div class="hero">
+    <div class="ht">📡 相机 AI 实时巡检 · 今日
+      <span class="live"><span class="pulse"></span>在线 38/40</span>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-cell" onclick="go('stats.html')"><div class="v">${119+alarms.length}</div><div class="l">AI检测</div></div>
+      <div class="hero-cell warn" onclick="go('stats.html')"><div class="v">${alarms.length}</div><div class="l">AI违规</div></div>
+      <div class="hero-cell warn" onclick="go('alarms.html?f=pending')"><div class="v">${pend}</div><div class="l">待确认</div></div>
+      <div class="hero-cell" onclick="go('stats.html')"><div class="v">${closeRate}%</div><div class="l">闭环率</div></div>
+    </div>
+  </div>
+
+  <div class="chain">
+    <div class="stp"><div class="ic">📷</div><b>相机识别</b><span>人形检测</span></div>
+    <div class="ar">→</div>
+    <div class="stp"><div class="ic">🤖</div><b>大模型</b><span>违规分析</span></div>
+    <div class="ar">→</div>
+    <div class="stp"><div class="ic">🔔</div><b>报警</b><span>定级引据</span></div>
+    <div class="ar">→</div>
+    <div class="stp"><div class="ic">✍</div><b>确认</b><span>闭环统计</span></div>
+  </div>
+
+  <div class="quick">
+    <button onclick="go('alarms.html?f=pending')"><div class="qi a">🔔</div><div class="ql">待确认</div></button>
+    <button onclick="go('alarms.html')"><div class="qi b">📋</div><div class="ql">全部报警</div></button>
+    <button onclick="go('stats.html')"><div class="qi c">📊</div><div class="ql">统计看板</div></button>
+    <button onclick="go('tasks.html')"><div class="qi d">✅</div><div class="ql">任务待办</div></button>
+    <button onclick="go('verify.html')"><div class="qi e">🪪</div><div class="ql">查证件</div></button>
+    <button onclick="go('qa.html')"><div class="qi f">💬</div><div class="ql">AI问答</div></button>
+    <button onclick="go('laws.html')"><div class="qi h">📖</div><div class="ql">法规库</div></button>
+    <button onclick="go('drafts.html')"><div class="qi g">📥</div><div class="ql">草稿箱</div></button>
+  </div>
+
+  <div class="sec-title">🔴 实时报警动态 <span class="tagline">相机自动推送</span><span class="more" onclick="go('alarms.html?f=pending')">查看全部 ›</span></div>
+  ${homeList}
+`;
+
+renderApp({title:'工作台', sub:'巡查员 · '+currentUser()+' · 龙岗区住建局', tab:'home', body});
+</script>
+</body>
+</html>

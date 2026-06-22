@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 复核确认</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 复核确认</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const a = getAlarm(getParam('id'));
+if(!a){ go('alarms.html'); }
+const t = TYPE[a.type];
+
+function imgHTML(){
+  return `${sceneSVG()}
+    <div class="bbox ${a.level}" data-label="${t.name}" style="left:${a.box.x}%;top:${a.box.y}%;width:${a.box.w}%;height:${a.box.h}%">
+      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span></div>
+    <div class="meta-bar"><span class="liveflag">● 相机抓拍</span><span>${a.device.split(' (')[0]}</span><span style="margin-left:auto">${a.time}</span></div>`;
+}
+
+const body = `
+  <div class="detail-img" id="detailImg">${imgHTML()}</div>
+  <div class="principle">
+    <span class="i">⚖</span>
+    <span><b>AI 主导识别定级，以现场复核确认为准。</b>相机自动框选并匹配判据；等级、法规、时限可修改，确认后计入整改闭环；如属误报可驳回。</span>
+  </div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">🤖 AI 识别结论</div>
+    <div class="kv"><div class="k">报警类型</div><div class="v">${t.name}（${t.cat==='ai'?'AI分析类':'基础检测类'}）</div></div>
+    <div class="kv"><div class="k">识别链路</div><div class="v"><span class="chain-tag">${t.chain}</span></div></div>
+    <div class="kv"><div class="k">点位设备</div><div class="v">${a.device}</div></div>
+    <div class="kv"><div class="k">所属区域</div><div class="v">${a.org}</div></div>
+    <div class="kv"><div class="k">触发时间</div><div class="v">今日 ${a.time}</div></div>
+    <div class="kv"><div class="k">AI置信度</div><div class="v">${a.conf}%</div></div>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>隐患等级（影响整改时限，可修改）</label>
+      <div class="seg" id="dLevel">
+        <button data-lv="major" onclick="pickLevel('major')">重大</button>
+        <button data-lv="serious" onclick="pickLevel('serious')">较大</button>
+        <button data-lv="general" onclick="pickLevel('general')">一般</button>
+      </div>
+      <div class="deadline-note">⏱ 建议整改时限：<b id="dDeadline" style="margin:0 4px;color:var(--ink)">5 天</b>（依等级自动匹配）</div>
+    </div>
+    <div class="field">
+      <label>引用法规依据</label>
+      <div class="law-box"><span class="code">${LAW[a.type].code}</span><br>${LAW[a.type].text}</div>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label>现场复核备注（可补充）</label>
+      <textarea class="area" id="dNote" placeholder="如：已电话告知项目负责人，要求立即整改…">${a.note||''}</textarea>
+    </div>
+  </div>
+  <div class="detail-actions">
+    <button class="btn btn-line" style="flex:.9" onclick="rejectAlert()">驳回（误报）</button>
+    <button class="btn btn-primary" style="flex:1.5" onclick="confirmAlert()">✓ 确认违规属实</button>
+  </div>
+`;
+
+renderApp({title:'隐患复核确认', back:true, body});
+setLevelUI(a.level);
+
+function setLevelUI(lv){
+  document.querySelectorAll('#dLevel button').forEach(b=>{b.className=''; if(b.dataset.lv===lv)b.classList.add('sel-'+lv);});
+  document.getElementById('dDeadline').textContent=DEADLINE[lv]+' 天';
+}
+function pickLevel(lv){ a.level=lv; setLevelUI(lv); toast('已调整为'+LVNAME[lv]+'隐患 · 时限 '+DEADLINE[lv]+' 天'); }
+function confirmAlert(){
+  a.note=document.getElementById('dNote').value.trim();
+  a.status='confirmed'; saveAlarms(alarms);
+  go('track.html?id='+a.id);
+}
+function rejectAlert(){
+  a.status='rejected'; saveAlarms(alarms);
+  go('alarms.html');
+}
+</script>
+</body>
+</html>

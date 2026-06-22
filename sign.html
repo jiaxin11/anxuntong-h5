@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 签字确认</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 签字确认</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const a = getAlarm(getParam('id'));
+if(!a){ go('alarms.html'); }
+const t = TYPE[a.type];
+let done = false; // 是否已生成
+
+function render(){
+  if(done){ renderSuccess(); return; }
+  const c={major:'var(--major)',serious:'var(--serious)',general:'var(--general)'}[a.level];
+  const body = `
+    <div class="card">
+      <div class="sec-title" style="margin-top:0">✅ 待开具隐患（计入整改通知书）</div>
+      <div class="summary-list">
+        <div class="sum-item">
+          <span class="dot" style="background:${c}"></span>
+          <span class="nm">${t.name}</span>
+          <span class="badge ${a.level}">${LVNAME[a.level]} · ${DEADLINE[a.level]}天</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="margin-top:0">✍ 巡查员签字</div>
+      <div class="sigpad" id="sigpad">
+        <canvas id="sigCanvas"></canvas>
+        <div class="sig-hint" id="sigHint">在此处手写签字</div>
+      </div>
+      <div class="sig-clear" onclick="clearSig()">清除重签</div>
+      <div class="principle" style="margin-bottom:0">
+        <span class="i">⚖</span>
+        <span>签字即确认上述内容经现场复核属实，据此生成《隐患整改通知书》并在线送达施工方。</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="generateNotice()">生成并送达通知书</button>
+    <button class="btn btn-line" onclick="goBack()" style="margin-top:10px">‹ 返回</button>
+  `;
+  renderApp({title:'签字确认', back:true, body});
+  initSig();
+}
+
+/* signature pad */
+let sigCtx,sigDrawn=false;
+function initSig(){
+  const cv=document.getElementById('sigCanvas');
+  const r=cv.getBoundingClientRect();
+  cv.width=r.width*2; cv.height=r.height*2;
+  sigCtx=cv.getContext('2d'); sigCtx.scale(2,2);
+  sigCtx.strokeStyle='#1C2733'; sigCtx.lineWidth=2.4; sigCtx.lineCap='round'; sigCtx.lineJoin='round';
+  sigDrawn=false;
+  let drawing=false,lx,ly;
+  const pos=e=>{const tt=e.touches?e.touches[0]:e;const b=cv.getBoundingClientRect();return[tt.clientX-b.left,tt.clientY-b.top];};
+  const start=e=>{drawing=true;[lx,ly]=pos(e);sigDrawn=true;document.getElementById('sigHint').style.display='none';e.preventDefault();};
+  const move=e=>{if(!drawing)return;const[x,y]=pos(e);sigCtx.beginPath();sigCtx.moveTo(lx,ly);sigCtx.lineTo(x,y);sigCtx.stroke();[lx,ly]=[x,y];e.preventDefault();};
+  const end=()=>drawing=false;
+  cv.onmousedown=start;cv.onmousemove=move;window.onmouseup=end;
+  cv.ontouchstart=start;cv.ontouchmove=move;cv.ontouchend=end;
+}
+function clearSig(){if(sigCtx){sigCtx.clearRect(0,0,9999,9999);sigDrawn=false;document.getElementById('sigHint').style.display='flex';}}
+
+function generateNotice(){
+  if(!sigDrawn){ toast('请先手写签字'); return; }
+  a.status='closed'; saveAlarms(alarms);
+  done=true; renderSuccess();
+}
+
+function renderSuccess(){
+  const now=new Date();
+  const tm=`${now.getMonth()+1}月${now.getDate()}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const body = `
+    <div class="success-wrap">
+      <div class="success-ic">✓</div>
+      <h2>通知书已生成并送达</h2>
+      <p>已在线送达施工方并进入督办闭环<br>限期整改 · 复查归档</p>
+      <div class="notice-card">
+        <div class="nt">隐患整改通知书（演示）</div>
+        <div class="nr"><span>工程项目</span><b>${a.org.split(' · ').pop()}</b></div>
+        <div class="nr"><span>隐患条数</span><b>1 条</b></div>
+        <div class="nr"><span>最短时限</span><b>${DEADLINE[a.level]} 天</b></div>
+        <div class="nr"><span>巡查员</span><b>${currentUser()}（已签字）</b></div>
+        <div class="nr"><span>开具时间</span><b>${tm}</b></div>
+      </div>
+      <button class="btn btn-primary" onclick="go('stats.html')">查看统计看板 ›</button>
+      <button class="btn btn-line" onclick="go('alarms.html')" style="margin-top:10px">返回报警列表</button>
+    </div>
+  `;
+  renderApp({title:'完成', body});
+}
+
+render();
+</script>
+</body>
+</html>

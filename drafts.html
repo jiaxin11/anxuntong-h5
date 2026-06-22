@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · 离线草稿箱</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · 离线草稿箱</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+let drafts = [
+  {id:1, name:'南岭社区 · 外墙清洗 弱网抓拍', region:'南湾街道 · 南岭社区', time:'今日 08:41', size:'3 张待补传识别'},
+  {id:2, name:'岗头社区 · 旧楼加固 离线录像', region:'坂田街道 · 岗头社区', time:'今日 07:55', size:'1 段录像待补传'}
+];
+
+function render(){
+  const items = drafts.length ? drafts.map(d=>`
+    <div class="task-item todo">
+      <div class="th"><div class="tn">${d.name}</div><span class="tpill todo">待补传</span></div>
+      <div class="tm">📍 ${d.region}<br>🕘 ${d.time} · ${d.size}</div>
+      <button class="btn btn-primary" style="margin-top:10px;padding:10px;font-size:14px" onclick="upload(${d.id})">⬆ 补传并识别</button>
+    </div>`).join('')
+    : '<div class="empty"><div class="e-ic">📭</div><p>草稿箱已清空，无待补传内容</p></div>';
+  const body = `
+    <div class="principle">
+      <span class="i">📥</span>
+      <span><b>没信号也能干活。</b>工地弱网/无网时，相机抓拍与识别任务自动存入离线草稿箱；回到信号区一键<b>补传识别</b>，不漏一处。</span>
+    </div>
+    <div class="sec-title">待补传草稿 <span class="tagline" id="cnt">${drafts.length} 项</span></div>
+    <div id="list">${items}</div>
+    <button class="btn btn-line" onclick="goBack()" style="margin-top:6px">‹ 返回</button>
+  `;
+  renderApp({title:'离线草稿箱', back:true, body});
+}
+function upload(id){
+  toast('正在补传并发起 AI 识别…');
+  setTimeout(()=>{
+    drafts = drafts.filter(d=>d.id!==id);
+    toast('✓ 补传完成，已生成报警进入清单');
+    render();
+  }, 1300);
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>安巡通 · AI 法规问答</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">安巡通 H5 · AI 法规问答</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const KB = [
+  {q:'临边防护栏杆要多高', a:'施工现场临边防护栏杆上杆离地高度应为 1.2m，下杆 0.6m；坡度大于 1:2.2 的屋面，防护栏杆应高 1.5m 并加挂安全立网。',
+   cite:'《建筑施工高处作业安全技术规范》JGJ 80-2016 第4.2节'},
+  {q:'安全帽佩戴有什么要求', a:'进入施工现场必须正确佩戴安全帽，系紧下颏带；不得用其他帽具代替，破损或超过有效期的安全帽应及时更换。',
+   cite:'《建筑施工安全检查标准》JGJ 59-2011 第3.11.3条'},
+  {q:'配电箱漏电保护怎么配置', a:'施工现场采用 TN-S 系统，配电箱、开关箱应做保护接地（PE）并设漏电保护器，额定漏电动作电流不大于 30mA、动作时间不大于 0.1s。',
+   cite:'《施工现场临时用电安全技术规范》JGJ 46-2005 第8章'},
+  {q:'动火作业需要什么手续', a:'动火作业须办理动火证、清理周边可燃物、配置灭火器材并设监护人；一级动火由单位主要负责人审批。',
+   cite:'《建设工程施工现场消防安全技术规范》GB 50720-2011'}
+];
+
+let msgs = [
+  {role:'ai', text:'你好，我是安巡通法规助手。可就施工安全法规、判据即问即答，答案均带《条文》出处。试试下面的常见问题👇'}
+];
+
+function bubble(m){
+  const av = m.role==='ai'?'🤖':'我';
+  const cite = m.cite ? `<div class="cite">📖 出处：<b>${m.cite}</b></div>` : '';
+  return `<div class="msg ${m.role}"><div class="av">${av}</div><div class="bubble">${m.text}${cite}</div></div>`;
+}
+
+function render(){
+  const suggest = KB.map(k=>`<button onclick="ask('${k.q}')">${k.q}？</button>`).join('');
+  const body = `
+    <div class="chat" id="chat">${msgs.map(bubble).join('')}</div>
+    <div class="qa-suggest" style="margin-top:12px">${suggest}</div>
+    <div class="chat-input">
+      <input id="qin" placeholder="输入法规问题…" onkeydown="if(event.key==='Enter')send()">
+      <button onclick="send()">↑</button>
+    </div>
+    <div class="muted tiny" style="text-align:center;margin-top:8px">基于 255 条已核对判据，拿不准时宁可不答</div>
+  `;
+  renderApp({title:'AI 法规问答', back:true, body});
+  scrollChat();
+}
+function scrollChat(){ const c=document.getElementById('chat'); if(c) c.parentElement.scrollTop=9999; }
+function reply(q){
+  const hit = KB.find(k=>q.includes(k.q)||k.q.includes(q));
+  if(hit) return {role:'ai', text:hit.a, cite:hit.cite};
+  return {role:'ai', text:'该问题暂未匹配到已核对判据。演示版仅内置部分常见条文，正式版覆盖 37 部文献 / 255 条判据，逐字可溯源。', cite:null};
+}
+function ask(q){
+  msgs.push({role:'me', text:q});
+  render();
+  setTimeout(()=>{ msgs.push(reply(q)); render(); }, 500);
+}
+function send(){
+  const inp=document.getElementById('qin'); const v=inp.value.trim();
+  if(!v) return; ask(v);
+}
+render();
+</script>
+</body>
+</html>
