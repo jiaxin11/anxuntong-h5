@@ -193,13 +193,13 @@ body{
 .detail-actions{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 22%);padding-top:14px;display:flex;gap:10px}
 
 /* timeline */
-.timeline{position:relative;padding-left:22px}
+.timeline{position:relative;padding-left:28px}
 .timeline .tl{position:relative;padding-bottom:16px}
 .timeline .tl:last-child{padding-bottom:0}
-.timeline .tl::before{content:'';position:absolute;left:-15px;top:3px;width:11px;height:11px;border-radius:50%;background:#fff;border:2.5px solid var(--ink-3)}
+.timeline .tl::before{content:'';position:absolute;left:-22px;top:3px;width:11px;height:11px;border-radius:50%;background:#fff;border:2.5px solid var(--ink-3)}
 .timeline .tl.done::before{background:var(--ok);border-color:var(--ok)}
 .timeline .tl.cur::before{background:var(--primary);border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
-.timeline .tl::after{content:'';position:absolute;left:-10px;top:14px;bottom:0;width:2px;background:var(--line)}
+.timeline .tl::after{content:'';position:absolute;left:-17px;top:14px;bottom:0;width:2px;background:var(--line)}
 .timeline .tl:last-child::after{display:none}
 .timeline .tl.done::after{background:var(--ok)}
 .timeline .tl .tt{font-size:13px;font-weight:600;color:var(--ink)}
