@@ -48,7 +48,7 @@ const body = `
 renderApp({title:'我的', tab:'me', body});
 
 function resetDemo(){ resetAlarms(); toast('已重置为初始演示数据'); setTimeout(()=>go('home.html'),700); }
-function logout(){ sessionStorage.removeItem('axt_user'); sessionStorage.removeItem('axt_role'); go('login.html'); }
+function logout(){ localStorage.removeItem('axt_user'); localStorage.removeItem('axt_role'); go('login.html'); }
 </script>
 </body>
 </html>
