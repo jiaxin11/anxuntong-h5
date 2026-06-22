@@ -12,10 +12,10 @@ const LAW = {
   fire:{code:'《建设工程施工现场消防安全技术规范》GB 50720',text:'发现烟雾/明火应立即处置并配置足够灭火器材（演示引据）。'}
 };
 const TYPE = {
-  helmet:{name:'未佩戴安全帽', short:'安全帽', icon:'🪖', chain:'人形检测 → 大模型分析', cat:'ai'},
-  smoking:{name:'吸烟行为', short:'吸烟', icon:'🚬', chain:'人形检测 → 大模型分析', cat:'ai'},
-  climb:{name:'违规攀爬', short:'攀爬', icon:'🧗', chain:'人形检测 → 大模型分析', cat:'ai'},
-  edge:{name:'临边作业危险', short:'临边', icon:'🚧', chain:'人形检测 → 大模型分析', cat:'ai'},
+  helmet:{name:'未佩戴安全帽', short:'安全帽', icon:'🪖', chain:'智能检测 → 大模型分析', cat:'ai'},
+  smoking:{name:'吸烟行为', short:'吸烟', icon:'🚬', chain:'智能检测 → 大模型分析', cat:'ai'},
+  climb:{name:'违规攀爬', short:'攀爬', icon:'🧗', chain:'智能检测 → 大模型分析', cat:'ai'},
+  edge:{name:'临边作业危险', short:'临边', icon:'🚧', chain:'智能检测 → 大模型分析', cat:'ai'},
   fire:{name:'疑似烟火', short:'烟火', icon:'🔥', chain:'烟火检测（基础）', cat:'basic'}
 };
 const DEADLINE = {major:2, serious:5, general:10};
@@ -107,7 +107,7 @@ function renderApp(o){
     </div>
     <div class="appbar">
       ${back}
-      <div class="brand-dot">小</div>
+      <div class="brand-dot">灵</div>
       <h1>${o.title}${sub}</h1>
       ${bell}
     </div>

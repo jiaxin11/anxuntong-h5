@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小快灵 · 报警推送间隔</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">小快灵 H5 · 报警推送间隔</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const KEY = 'axt_push_interval';
+const OPTIONS = [
+  {v:'实时',       d:'有报警立即推送（默认）'},
+  {v:'每 5 分钟',  d:'聚合后每 5 分钟推送一次'},
+  {v:'每 15 分钟', d:'聚合后每 15 分钟推送一次'},
+  {v:'每 30 分钟', d:'聚合后每 30 分钟推送一次'},
+  {v:'仅工作时间', d:'08:00–18:00 推送，其余时段静默'}
+];
+
+function curr(){ return localStorage.getItem(KEY) || '实时'; }
+
+function pick(v){
+  localStorage.setItem(KEY, v);
+  toast('已设为「'+v+'」');
+  render();
+}
+
+function render(){
+  const c = curr();
+  const rows = OPTIONS.map(o=>`
+    <div class="opt-row ${o.v===c?'on':''}" onclick="pick('${o.v}')">
+      <div class="ot">${o.v}<small>${o.d}</small></div>
+      <div class="ck">${o.v===c?'✓':''}</div>
+    </div>`).join('');
+  const body = `
+    <div class="sec-title">⏱ 选择报警推送间隔</div>
+    <div class="list-card">${rows}</div>
+    <div class="tip">为减少打扰可调低推送频率；<b>重大 / 较大</b>级别报警在任意模式下仍会实时提醒。</div>
+  `;
+  renderApp({title:'报警推送间隔', back:true, body});
+}
+
+render();
+</script>
+</body>
+</html>

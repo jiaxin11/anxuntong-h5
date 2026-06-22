@@ -14,6 +14,7 @@
 <script>
 requireLogin();
 const confirmedDone = alarms.filter(a=>a.status==='confirmed'||a.status==='closed').length;
+const pushInterval = localStorage.getItem('axt_push_interval') || '实时';
 
 const body = `
   <div class="me-head">
@@ -30,8 +31,8 @@ const body = `
   <div class="list-card">
     <div class="list-row" onclick="go('drafts.html')"><div class="li">📥</div><div class="lt">离线草稿箱<small>弱网拍照自动暂存，回网补传</small></div><div class="lv">0 条</div><div class="chev">›</div></div>
     <div class="list-row" onclick="go('tasks.html')"><div class="li">✅</div><div class="lt">任务与待复查</div><div class="lv">2 待办</div><div class="chev">›</div></div>
-    <div class="list-row" onclick="toast('演示：我负责的相机点位 40 个')"><div class="li">📷</div><div class="lt">我的相机点位</div><div class="lv">40 个</div><div class="chev">›</div></div>
-    <div class="list-row" onclick="toast('演示：报警推送实时')"><div class="li">🔔</div><div class="lt">报警推送设置</div><div class="lv">实时</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="go('points.html')"><div class="li">📷</div><div class="lt">我的相机点位</div><div class="lv">40 个</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="go('interval.html')"><div class="li">🔔</div><div class="lt">报警推送间隔</div><div class="lv">${pushInterval}</div><div class="chev">›</div></div>
     <div class="list-row" onclick="toast('演示：切换工作空间 / 多租户隔离')"><div class="li">🏢</div><div class="lt">切换工作空间</div><div class="lv">龙岗区住建局</div><div class="chev">›</div></div>
   </div>
   <div class="list-card">

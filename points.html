@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小快灵 · 我的相机点位</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">小快灵 H5 · 我的相机点位</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+/* 演示点位数据（脱敏） */
+const POINTS = [
+  {name:'DH-IPC-门口枪机', org:'坂田街道 · 五和社区 · 沿街商铺装修', type:'AI 智能检测', online:true},
+  {name:'HK-球机-3#楼东侧', org:'坂田街道 · 岗头社区 · 旧楼加固工程', type:'AI 智能检测', online:true},
+  {name:'DH-IPC-料场', org:'布吉街道 · 甘坑社区 · 充电设施安装', type:'AI 智能检测', online:true},
+  {name:'HK-球机-脚手架', org:'南湾街道 · 南岭社区 · 外墙清洗作业', type:'AI 智能检测', online:true},
+  {name:'DH-IPC-角落', org:'坂田街道 · 五和社区 · 沿街商铺装修', type:'烟火检测', online:true},
+  {name:'HK-枪机-2#门', org:'布吉街道 · 木棉湾社区 · 招牌安装作业', type:'AI 智能检测', online:false},
+  {name:'DH-IPC-基坑', org:'南湾街道 · 丹竹头社区 · 基坑支护工程', type:'AI 智能检测', online:true},
+  {name:'HK-球机-塔吊', org:'坂田街道 · 雪象社区 · 主体结构施工', type:'AI 智能检测', online:true},
+  {name:'DH-IPC-通道口', org:'布吉街道 · 长龙社区 · 管线改造', type:'AI 智能检测', online:true},
+  {name:'HK-枪机-配电房', org:'南湾街道 · 上李朗社区 · 设备安装', type:'烟火检测', online:false},
+  {name:'DH-IPC-材料堆场', org:'坂田街道 · 岗头社区 · 旧楼加固工程', type:'AI 智能检测', online:true},
+  {name:'HK-球机-出入口', org:'布吉街道 · 甘坑社区 · 充电设施安装', type:'AI 智能检测', online:true}
+];
+
+const TOTAL = 40;
+const OFFLINE = 2;
+const ONLINE = TOTAL - OFFLINE;
+
+const rows = POINTS.map(p=>`
+  <div class="list-row" onclick="toast('演示：查看「${p.name}」实时画面')">
+    <div class="li">📷</div>
+    <div class="lt">${p.name}<small>${p.org}</small></div>
+    <div class="lv">${p.type}<br><span class="pt-dot" style="background:${p.online?'var(--ok)':'var(--ink-3)'}"></span>${p.online?'在线':'离线'}</div>
+    <div class="chev">›</div>
+  </div>`).join('');
+
+const body = `
+  <div class="pt-sum">
+    <div class="pt-cell"><div class="v">${TOTAL}</div><div class="l">点位总数</div></div>
+    <div class="pt-cell"><div class="v" style="color:var(--ok)">${ONLINE}</div><div class="l">在线</div></div>
+    <div class="pt-cell"><div class="v" style="color:var(--ink-3)">${OFFLINE}</div><div class="l">离线</div></div>
+  </div>
+  <div class="sec-title">📍 点位列表 <span class="tagline">仅展示部分演示点位</span></div>
+  <div class="list-card">${rows}</div>
+  <div class="tip">点位由管理员统一下发并分配至巡查员，相机持续 AI 识别并自动推送报警。</div>
+`;
+
+renderApp({title:'我的相机点位', back:true, body});
+</script>
+</body>
+</html>
