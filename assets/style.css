@@ -31,6 +31,14 @@ body{
 .statusbar{height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 6px;font-size:13px;font-weight:600;color:var(--ink);z-index:50;flex-shrink:0}
 .statusbar .r{display:flex;gap:6px;align-items:center}
 
+/* ====== 移动端浏览器：去掉最外层手机壳，全屏铺满 ====== */
+@media (max-width:600px){
+  body{display:block;padding:0;background:var(--bg);min-height:100dvh}
+  .stage-label{display:none}
+  .phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}
+  .phone .notch,.phone .statusbar{display:none}
+}
+
 /* app header */
 .appbar{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:8px 16px 14px;display:flex;align-items:center;gap:10px;position:relative;z-index:40;flex-shrink:0}
 .appbar .back{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:22px;cursor:pointer;opacity:.95}
