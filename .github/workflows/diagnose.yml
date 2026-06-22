@@ -1,0 +1,57 @@
+name: Diagnose SSH Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    name: ssh -vvv connectivity test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets presence (values not printed)
+        run: |
+          echo "DEPLOY_HOST set : ${{ secrets.DEPLOY_HOST != '' }}"
+          echo "DEPLOY_USER set : ${{ secrets.DEPLOY_USER != '' }}"
+          echo "DEPLOY_PATH set : ${{ secrets.DEPLOY_PATH != '' }}"
+          echo "DEPLOY_SSH_KEY set : ${{ secrets.DEPLOY_SSH_KEY != '' }}"
+
+      - name: Prepare key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "----- private key head/tail (no body) -----"
+          head -n 1 ~/.ssh/deploy_key
+          tail -n 1 ~/.ssh/deploy_key
+          wc -l ~/.ssh/deploy_key
+
+      - name: TCP reachability test (port 22)
+        run: |
+          echo "Testing TCP to ${{ secrets.DEPLOY_HOST }}:22 ..."
+          timeout 15 bash -c 'cat < /dev/null > /dev/tcp/${{ secrets.DEPLOY_HOST }}/22' \
+            && echo "TCP 22 REACHABLE" \
+            || echo "TCP 22 NOT reachable (likely firewall / 安全组)"
+
+      - name: SSH verbose test
+        run: |
+          set +e
+          ssh -vvv -i ~/.ssh/deploy_key -p 22 \
+            -o ConnectTimeout=15 \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "echo CONNECTED_OK; hostname; whoami; pwd" 2>&1 | tee /tmp/ssh-diag.log
+          echo "ssh exit code: ${PIPESTATUS[0]}"
+
+      - name: Upload diagnostic log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssh-diag
+          path: /tmp/ssh-diag.log
+          if-no-files-found: warn
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
