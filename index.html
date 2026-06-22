@@ -8,7 +8,7 @@
 <body>
 <script>
 // 入口：已登录直接进工作台，否则去登录页
-location.replace(sessionStorage.getItem('axt_user') ? 'home.html' : 'login.html');
+location.replace(localStorage.getItem('axt_user') ? 'home.html' : 'login.html');
 </script>
 </body>
 </html>

@@ -57,11 +57,11 @@ function toggleEye(el){ const p=document.getElementById('pwd');
 function doLogin(){
   const acc=document.getElementById('acc').value.trim();
   if(!acc){ alert('请输入账号'); return; }
-  sessionStorage.setItem('axt_user', role==='巡查员'?'王师傅':acc);
-  sessionStorage.setItem('axt_role', role);
+  localStorage.setItem('axt_user', role==='巡查员'?'王师傅':acc);
+  localStorage.setItem('axt_role', role);
   if(role==='巡查员') location.href='home.html';
   else { alert('演示版聚焦巡查员端，管理层/管理员看板暂未接入，先以巡查员身份体验闭环。');
-    sessionStorage.setItem('axt_user','王师傅'); sessionStorage.setItem('axt_role','巡查员'); location.href='home.html'; }
+    localStorage.setItem('axt_user','王师傅'); localStorage.setItem('axt_role','巡查员'); location.href='home.html'; }
 }
 startClock();
 </script>

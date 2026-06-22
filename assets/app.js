@@ -56,9 +56,9 @@ function getAlarm(id){ return alarms.find(a=>String(a.id)===String(id)); }
 
 /* ---------- 登录态 ---------- */
 function requireLogin(){
-  if(!sessionStorage.getItem('axt_user')){ location.href='login.html'; }
+  if(!localStorage.getItem('axt_user')){ location.href='login.html'; }
 }
-function currentUser(){ return sessionStorage.getItem('axt_user') || '王师傅'; }
+function currentUser(){ return localStorage.getItem('axt_user') || '王师傅'; }
 
 /* ---------- 施工场景 SVG ---------- */
 function sceneSVG(){
