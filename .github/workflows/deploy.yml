@@ -1,0 +1,44 @@
+name: Deploy H5 to Server
+
+# 触发条件：
+# 1. push 到 main 分支时自动部署（生产）
+# 2. 也可在 Actions 页面手动触发（workflow_dispatch）
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 避免并发部署互相覆盖
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: rsync static files to server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH key & known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p 22 -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='CONVERSATION.md' \
+            --exclude='README.md' \
+            --exclude='.gitignore' \
+            -e "ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes" \
+            ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
