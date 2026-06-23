@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 巡查首页</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 巡查首页</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const pend=alarms.filter(a=>a.status==='PENDING').length;
+const conf=alarms.filter(a=>a.status==='CONFIRMED').length;
+const mis=alarms.filter(a=>a.status==='MISJUDGE').length;
+const topList=alarms.filter(a=>a.status==='PENDING').slice(0,3);
+
+function card(a){ const t=TYPES[a.type];
+  return `<div class="alarm ${t.level}" onclick="go('insp-detail.html?id=${a.id}')">
+    <div class="top">${alarmThumb(a)}
+      <div class="info"><div class="nm">${t.name}<span class="badge ${t.level}">${LVNAME[t.level]}</span></div>
+        <div class="meta"><span class="dv">📷 ${a.dev}</span><span class="dv">📍 ${a.street} · ${a.site}</span></div></div></div>
+    <div class="foot"><span class="conf">AI ${a.conf}% <span class="bar"><i style="width:${a.conf}%"></i></span></span>
+      <span style="color:var(--ink-3)">· ${a.time}</span><span class="status-pill ${a.status}">${ST[a.status]}</span></div></div>`; }
+
+const body=`
+  <div class="hero">
+    <div class="ht">📡 相机 AI 实时巡检 · 今日 <span class="live"><span class="pulse"></span>在线 38/40</span></div>
+    <div class="hero-grid">
+      <div class="hero-cell"><div class="v">128</div><div class="l">AI检测</div></div>
+      <div class="hero-cell warn" onclick="go('insp-alarms.html')"><div class="v">${alarms.filter(a=>a.status!=='MISJUDGE').length}</div><div class="l">报警</div></div>
+      <div class="hero-cell warn" onclick="go('insp-alarms.html')"><div class="v">${pend}</div><div class="l">待确认</div></div>
+      <div class="hero-cell"><div class="v">${conf}</div><div class="l">已确认</div></div>
+    </div>
+  </div>
+  <div class="quick">
+    <button onclick="go('insp-alarms.html')"><div class="qi">🔔</div><div class="ql">待确认</div></button>
+    <button onclick="toast('演示：我的工地（在线状态/趋势/地图）')"><div class="qi">🏗️</div><div class="ql">我的工地</div></button>
+    <button onclick="go('insp-detail.html?id=1')"><div class="qi">✓</div><div class="ql">快速复核</div></button>
+    <button onclick="go('insp-me.html')"><div class="qi">📊</div><div class="ql">工作统计</div></button>
+  </div>
+  <div class="sec-title">🔴 实时报警动态 <span class="tagline">相机自动推送</span><span class="more" onclick="go('insp-alarms.html')">查看全部 ›</span></div>
+  ${topList.length?topList.map(card).join(''):'<div class="empty"><div class="e-ic">✅</div>暂无待确认报警</div>'}
+`;
+renderApp({title:'巡查工作台', sub:'巡查员 · '+currentUser(), role:'insp', tab:'home', body});
+</script>
+</body>
+</html>

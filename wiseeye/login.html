@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 登录</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 WiseEye-JA · 登录</div>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="login">
+    <div class="lg-top">
+      <div class="lg-logo">慧</div>
+      <h1>慧眼建安</h1>
+      <div class="sub">龙岗区建筑工地 AI 智能监管平台<br>相机识别 → 报警 → 确认 → 整改 → 闭环</div>
+    </div>
+    <div class="lg-form">
+      <label>选择登录身份</label>
+      <div class="role-pick" id="rolePick">
+        <button class="on" data-r="insp" onclick="pick(this)"><div class="ri">👷</div><div><div class="rt">巡查员</div><div class="rd">报警复核确认 · 整改闭环</div></div></button>
+        <button data-r="site" onclick="pick(this)"><div class="ri">🦺</div><div><div class="rt">工地负责人</div><div class="rd">班前会 · 本工地报警 · 整改申诉</div></div></button>
+        <button data-r="admin" onclick="pick(this)"><div class="ri">🛡️</div><div><div class="rt">监管管理端</div><div class="rd">总览 · 风险预警 · 报表 · 配置</div></div></button>
+      </div>
+      <div class="lg-field"><span>👤</span><input id="acc" placeholder="账号 / 手机号" value="wangshifu"></div>
+      <div class="lg-field"><span>🔒</span><input id="pwd" type="password" placeholder="密码" value="123456"></div>
+      <button class="lg-btn" onclick="doLogin()">登 录</button>
+    </div>
+    <div class="lg-foot">龙岗区住建局 · 专项测试演示版 · 2026<br>数据本地化部署 · 演示数据脱敏</div>
+  </div>
+</div>
+<script src="assets/app.js"></script>
+<script>
+let role='insp';
+const NAME={insp:'王师傅',site:'李建国',admin:'张主任'};
+const HOME={insp:'insp-home.html',site:'site-home.html',admin:'admin-overview.html'};
+function pick(el){ role=el.dataset.r; document.querySelectorAll('#rolePick button').forEach(b=>b.classList.toggle('on',b===el)); }
+function doLogin(){
+  const acc=document.getElementById('acc').value.trim();
+  if(!acc){ alert('请输入账号'); return; }
+  localStorage.setItem('we_user', NAME[role]);
+  localStorage.setItem('we_role', role);
+  location.href=HOME[role];
+}
+startClock();
+</script>
+</body>
+</html>

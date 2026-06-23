@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 报警</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 报警清单</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+let tab='PENDING';
+function card(a){ const t=TYPES[a.type];
+  return `<div class="alarm ${t.level}" onclick="go('insp-detail.html?id=${a.id}')">
+    <div class="top">${alarmThumb(a)}
+      <div class="info"><div class="nm">${t.name}<span class="badge ${t.level}">${LVNAME[t.level]}</span></div>
+        <div class="meta"><span class="dv">📷 ${a.dev} (SN:${a.sn})</span><span class="dv">📍 ${a.street} · ${a.site}</span></div></div></div>
+    <div class="foot"><span class="conf">AI ${a.conf}% <span class="bar"><i style="width:${a.conf}%"></i></span></span>
+      <span style="color:var(--ink-3)">· ${a.time}</span><span class="status-pill ${a.status}">${ST[a.status]}</span></div></div>`; }
+function render(){
+  const list=alarms.filter(a=> tab==='PENDING'?a.status==='PENDING':a.status!=='PENDING');
+  const seg=`<div class="seg">
+    <button class="${tab==='PENDING'?'on':''}" onclick="sw('PENDING')">待确认 ${alarms.filter(a=>a.status==='PENDING').length}</button>
+    <button class="${tab!=='PENDING'?'on':''}" onclick="sw('DONE')">已处理 ${alarms.filter(a=>a.status!=='PENDING').length}</button></div>`;
+  const body=seg+(list.length?list.map(card).join(''):'<div class="empty"><div class="e-ic">✅</div>暂无报警</div>');
+  renderApp({title:'报警清单', role:'insp', tab:'alarms', body});
+}
+function sw(t){ tab=t; render(); }
+render();
+</script>
+</body>
+</html>

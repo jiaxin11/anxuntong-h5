@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 我的</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 我的</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const done=alarms.filter(a=>a.status!=='PENDING').length;
+const body=`
+  <div class="me-head"><div class="ava">👷</div><div><div class="nm">${currentUser()}</div><div class="rl">巡查员 · 龙岗区住建局 · 工号 LG-0426</div></div></div>
+  <div class="stat-grid">
+    <div class="stat-cell"><div class="v">${done+18}</div><div class="l">本月确认</div></div>
+    <div class="stat-cell"><div class="v" style="color:var(--ok)">23</div><div class="l">本月闭环</div></div>
+  </div>
+  <div class="list-card">
+    <div class="list-row" onclick="toast('演示：我的工地 12 个')"><div class="li">🏗️</div><div class="lt">我的工地<small>负责复核的工地</small></div><div class="lv">12 个</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：我负责的相机点位 40 个')"><div class="li">📷</div><div class="lt">我的相机点位</div><div class="lv">40 个</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：报警推送间隔（实时/5/15/30分钟/仅工作时间）')"><div class="li">🔔</div><div class="lt">报警推送间隔</div><div class="lv">实时</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：弱网离线草稿箱')"><div class="li">📥</div><div class="lt">离线草稿箱<small>弱网操作自动暂存补传</small></div><div class="lv">0 条</div><div class="chev">›</div></div>
+  </div>
+  <div class="list-card">
+    <div class="list-row" onclick="toast('演示：AI 法规问答')"><div class="li">💬</div><div class="lt">AI 法规问答</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="toast('演示：联系技术支持')"><div class="li">🎧</div><div class="lt">联系支持</div><div class="chev">›</div></div>
+  </div>
+  <div class="list-card">
+    <div class="list-row" onclick="resetDemo()"><div class="li">♻</div><div class="lt" style="color:var(--info)">重置演示数据</div><div class="chev">›</div></div>
+    <div class="list-row" onclick="logout()"><div class="li">🚪</div><div class="lt" style="color:var(--major)">退出登录</div><div class="chev">›</div></div>
+  </div>
+`;
+renderApp({title:'我的', role:'insp', tab:'me', body});
+function resetDemo(){ resetAlarms(); toast('已重置演示数据'); setTimeout(()=>go('insp-home.html'),700); }
+</script>
+</body>
+</html>
