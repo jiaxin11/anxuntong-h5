@@ -22,7 +22,7 @@ const DEV=[
 ];
 const pins=DEV.map((d,i)=>`<div class="pin" style="left:${15+i*12}%;top:${28+(i%3)*22}%;background:${d[3]?'var(--ok)':'var(--ink-3)'}"></div>`).join('');
 const rows=DEV.map(d=>`
-  <div class="list-row" onclick="toast('演示：查看「${d[0]}」实时画面')">
+  <div class="list-row" onclick="go('camera.html?n=${encodeURIComponent(d[0])}')">
     <div class="li">📷</div><div class="lt">${d[0]}<small>${d[1]} · ${d[2]}${d[4]?' · PTZ云台':''}</small></div>
     <div class="lv"><span class="dot-on" style="background:${d[3]?'var(--ok)':'var(--ink-3)'}"></span>${d[3]?'在线':'离线'}</div><div class="chev">›</div></div>`).join('');
 const on=DEV.filter(d=>d[3]).length;

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 设备在线率</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 设备在线率监控</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const KEY='we_offline_notified';
+const OFF=[
+  {sn:'7K2J8809',dev:'DH-IPC-基坑',site:'丹竹头·基坑支护',street:'南湾街道',dur:'离线 3h12m'},
+  {sn:'7K2J8853',dev:'HK-枪机-门岗',site:'木棉湾·招牌安装',street:'布吉街道',dur:'离线 2h40m'},
+  {sn:'7K2J8867',dev:'HK-球机-塔吊',site:'雪象·主体结构',street:'坂田街道',dur:'离线 5h05m'}
+];
+function notified(){ try{return new Set(JSON.parse(localStorage.getItem(KEY))||[]);}catch(e){return new Set();} }
+function save(s){ localStorage.setItem(KEY,JSON.stringify([...s])); }
+const total=7000, off=OFF.length, on=total-off-12;
+function render(){
+  const nt=notified();
+  const rows=OFF.map(d=>`
+    <div class="list-row" style="cursor:default">
+      <div class="li" style="background:var(--major-bg)">📷</div>
+      <div class="lt">${d.dev}<small>SN:${d.sn} · ${d.street}·${d.site} · <span style="color:var(--major)">${d.dur}</span></small></div>
+      ${nt.has(d.sn)?'<span class="lvl-pill" style="background:var(--ok)">已通知</span>':`<button class="chip" style="padding:5px 11px" onclick="notify('${d.sn}')">通知街道</button>`}
+    </div>`).join('');
+  const body=`
+    <div class="principle"><span class="i">📡</span><span>设备每 5 分钟轮询神眸 device.status；<b>离线超 2 小时</b>自动通知对应街道联系人（防重复），恢复后再次离线可再通知。</span></div>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-cell c-ai"><div class="v">94%</div><div class="l">在线率</div></div>
+      <div class="stat-cell c-ok"><div class="v">${(on/1000).toFixed(1)}k</div><div class="l">在线</div></div>
+      <div class="stat-cell c-vio"><div class="v">${off}</div><div class="l">超时离线</div></div></div>
+    <div class="sec-title">⚠️ 离线超 2h 设备</div>
+    <div class="list-card">${rows}</div>
+    <button class="btn btn-primary" onclick="all()">一键通知全部街道联系人</button>`;
+  renderApp({title:'设备在线率监控', back:true, body});
+}
+function notify(sn){ const s=notified(); s.add(sn); save(s); toast('已短信/小程序通知街道联系人'); render(); }
+function all(){ const s=notified(); OFF.forEach(d=>s.add(d.sn)); save(s); toast('已通知全部相关街道联系人'); render(); }
+render();
+</script>
+</body>
+</html>

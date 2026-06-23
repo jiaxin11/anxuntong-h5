@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 用户与角色</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 用户与角色</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const KEY='we_users_v1';
+const SEED=[
+  {id:1,name:'张主任',role:'住建局管理员',street:'全区',on:true},
+  {id:2,name:'王科长',role:'监管科长',street:'全区',on:true},
+  {id:3,name:'李建国',role:'街道办',street:'坂田街道',on:true},
+  {id:4,name:'王师傅',role:'巡查员',street:'坂田街道',on:true},
+  {id:5,name:'陈伟',role:'巡查员',street:'南湾街道',on:true},
+  {id:6,name:'周强',role:'巡查员',street:'布吉街道',on:false}
+];
+const RC={'住建局管理员':'var(--major)','监管科长':'var(--serious)','街道办':'var(--info)','巡查员':'var(--ok)'};
+function load(){ try{return JSON.parse(localStorage.getItem(KEY))||SEED;}catch(e){return SEED;} }
+function save(a){ localStorage.setItem(KEY,JSON.stringify(a)); }
+function render(){
+  const list=load();
+  const rows=list.map(u=>`
+    <div class="list-row" style="cursor:default">
+      <div class="li" style="background:${u.on?'var(--primary-soft)':'var(--surface-2)'}">${u.role==='巡查员'?'👷':'🛡️'}</div>
+      <div class="lt">${u.name} <span class="lvl-pill" style="background:${RC[u.role]}">${u.role}</span><small>${u.street}</small></div>
+      <button class="chip ${u.on?'on':''}" style="padding:5px 12px" onclick="toggle(${u.id})">${u.on?'启用':'停用'}</button>
+    </div>`).join('');
+  const body=`
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-cell"><div class="v">${list.length}</div><div class="l">账号</div></div>
+      <div class="stat-cell c-ok"><div class="v">${list.filter(u=>u.on).length}</div><div class="l">启用</div></div>
+      <div class="stat-cell"><div class="v" style="color:var(--ink-3)">${list.filter(u=>u.role==='巡查员').length}</div><div class="l">巡查员</div></div></div>
+    <div class="sec-title">用户列表 <span class="tagline">RBAC 角色 + 街道隔离</span></div>
+    <div class="list-card">${rows}</div>
+    <button class="btn btn-primary" onclick="add()">＋ 新增用户</button>`;
+  renderApp({title:'用户与角色', back:true, body});
+}
+function toggle(id){ const l=load(); const u=l.find(x=>x.id===id); u.on=!u.on; save(l); toast(u.name+' 已'+(u.on?'启用':'停用')); render(); }
+let n=7;
+function add(){ const l=load(); l.push({id:Date.now(),name:'新巡查员'+(n++),role:'巡查员',street:'坂田街道',on:true}); save(l); toast('已新增用户（演示）'); render(); }
+render();
+</script>
+</body>
+</html>

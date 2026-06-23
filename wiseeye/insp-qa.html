@@ -23,11 +23,17 @@ function render(){
   const chips=Object.keys(QA).map(q=>`<div class="chip" onclick="ask('${q}')">${q}</div>`).join('');
   const body=`
     <div style="margin-bottom:12px">${list}</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input id="qin" class="area" style="min-height:0;flex:1;padding:11px" placeholder="输入你的问题…">
+      <button class="btn btn-primary" style="width:auto;padding:11px 16px" onclick="askFree()">发送</button>
+    </div>
     <div class="sec-title">常见问题</div>
     <div class="chips">${chips}</div>`;
   renderApp({title:'AI 法规问答', back:true, body});
 }
-function ask(q){ const a=QA[q]; msgs.push({role:'q',text:q}); msgs.push({role:'ai',text:a[0],src:a[1]}); render(); }
+function reply(q){ const a=QA[q]||['已收到你的问题。正式版将基于法规库 + 大模型作答，并附《条文》出处与整改建议。','法规库 / 大模型（演示）']; msgs.push({role:'q',text:q}); msgs.push({role:'ai',text:a[0],src:a[1]}); render(); }
+function ask(q){ reply(q); }
+function askFree(){ const el=document.getElementById('qin'); const v=(el&&el.value||'').trim(); if(!v){ toast('请输入问题'); return; } reply(v); }
 render();
 </script>
 </body>

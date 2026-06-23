@@ -16,7 +16,7 @@ const COLOR={red:'var(--major)',yellow:'var(--serious)',green:'var(--ok)'};
 function spark(seed){ let s=seed*97; const bars=[]; for(let i=0;i<7;i++){ s=(s*1103515245+12345)&0x7fffffff; bars.push(20+Math.floor(s/0x7fffffff*80)); } return `<div class="spark">${bars.map(h=>`<i style="height:${h}%"></i>`).join('')}</div>`; }
 const pins=SITES.map((s,i)=>`<div class="pin" style="left:${12+i*14}%;top:${30+(i%3)*22}%;background:${COLOR[s.lvl]}"></div>`).join('');
 const rows=SITES.map(s=>`
-  <div class="card" style="margin-bottom:10px" onclick="toast('演示：进入「${s.name}」工地详情')">
+  <div class="card" style="margin-bottom:10px" onclick="go('site-detail.html?id=${s.id}')">
     <div style="display:flex;align-items:center;gap:8px">
       <b style="font-size:14px;flex:1">${s.name}</b>
       <span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':s.lvl==='yellow'?'预警':'正常'}</span>
