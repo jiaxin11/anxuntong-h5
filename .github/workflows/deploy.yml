@@ -30,7 +30,13 @@ jobs:
       - name: Deploy via rsync (password auth)
         env:
           SSHPASS: ${{ secrets.DEPLOY_PASSWORD }}
+          DHOST: ${{ secrets.DEPLOY_HOST }}
+          DUSER: ${{ secrets.DEPLOY_USER }}
+          DPATH: ${{ secrets.DEPLOY_PATH }}
         run: |
+          trim(){ echo "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }
+          HOST="$(trim "$DHOST")"; USER="$(trim "$DUSER")"; DEST="$(trim "$DPATH")"
+          echo "部署目标: ${USER}@${HOST}:${DEST}/"
           rsync -avz --delete \
             --exclude='.git' \
             --exclude='.github' \
@@ -38,4 +44,4 @@ jobs:
             --exclude='README.md' \
             --exclude='.gitignore' \
             -e "sshpass -e ssh -p 22 -o StrictHostKeyChecking=yes" \
-            ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
+            ./ "${USER}@${HOST}:${DEST}/"
