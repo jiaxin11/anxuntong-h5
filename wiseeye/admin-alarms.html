@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 报警管理</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 报警管理</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+let f='ALL';
+const F=[['ALL','全部'],['PENDING','待确认'],['CONFIRMED','已确认'],['MISJUDGE','误报']];
+function render(){
+  const list=alarms.filter(a=>f==='ALL'||a.status===f);
+  const total=alarms.length, mis=alarms.filter(a=>a.status==='MISJUDGE').length;
+  const misRate=Math.round(mis/total*100);
+  const chips=`<div class="chips" style="margin-bottom:12px">${F.map(([k,l])=>`<div class="chip ${f===k?'on':''}" onclick="setF('${k}')">${l}</div>`).join('')}</div>`;
+  const cards=list.map(a=>{ const t=TYPES[a.type];
+    return `<div class="alarm ${t.level}">
+      <div class="top">${alarmThumb(a)}<div class="info"><div class="nm">${t.name}<span class="badge ${t.level}">${LVNAME[t.level]}</span></div>
+        <div class="meta"><span class="dv">📷 ${a.dev} (SN:${a.sn})</span><span class="dv">📍 ${a.street} · ${a.site}</span></div></div></div>
+      <div class="foot"><span class="conf">AI ${a.conf}% <span class="bar"><i style="width:${a.conf}%"></i></span></span><span style="color:var(--ink-3)">· ${a.time}</span>
+        <span class="status-pill ${a.status}">${ST[a.status]}</span>
+        ${a.status==='PENDING'?`<button class="chip" style="padding:3px 9px;font-size:11px;margin-left:6px" onclick="urge(${a.id})">催办</button>`:''}</div></div>`;
+  }).join('');
+  const body=`
+    <div class="stat-grid c4" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-cell c-vio"><div class="v">${total}</div><div class="l">报警总数</div></div>
+      <div class="stat-cell c-pend"><div class="v">${alarms.filter(a=>a.status==='PENDING').length}</div><div class="l">待确认</div></div>
+      <div class="stat-cell"><div class="v" style="color:var(--ink-3)">${misRate}%</div><div class="l">误报率</div></div></div>
+    ${chips}
+    ${cards||'<div class="empty"><div class="e-ic">✅</div>暂无报警</div>'}`;
+  renderApp({title:'报警管理', back:true, body});
+}
+function setF(k){ f=k; render(); }
+function urge(id){ toast('已向负责巡查员发送催办通知'); }
+render();
+</script>
+</body>
+</html>

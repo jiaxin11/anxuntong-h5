@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 相机点位</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 我的相机点位</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const POINTS=[
+  ['DH-IPC-门口枪机','坂田·五和·沿街商铺装修','AI 智能检测',true],
+  ['HK-球机-3#楼东侧','坂田·岗头·旧楼加固','AI 智能检测',true],
+  ['DH-IPC-料场','布吉·甘坑·充电设施','烟火检测',true],
+  ['HK-球机-脚手架','南湾·南岭·外墙清洗','AI 智能检测',true],
+  ['DH-IPC-通道口','坂田·五和·沿街商铺装修','AI 智能检测',true],
+  ['HK-枪机-门岗','布吉·木棉湾·招牌安装','AI 智能检测',false],
+  ['DH-IPC-基坑','南湾·丹竹头·基坑支护','AI 智能检测',true],
+  ['HK-球机-塔吊','坂田·雪象·主体结构','AI 智能检测',false]
+];
+const rows=POINTS.map(p=>`
+  <div class="list-row" onclick="toast('演示：查看「${p[0]}」实时画面')">
+    <div class="li">📷</div><div class="lt">${p[0]}<small>${p[1]}</small></div>
+    <div class="lv">${p[2]}<br><span class="dot-on" style="background:${p[3]?'var(--ok)':'var(--ink-3)'}"></span>${p[3]?'在线':'离线'}</div>
+    <div class="chev">›</div></div>`).join('');
+const body=`
+  <div class="stat-grid c4" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-cell"><div class="v">40</div><div class="l">点位总数</div></div>
+    <div class="stat-cell"><div class="v" style="color:var(--ok)">38</div><div class="l">在线</div></div>
+    <div class="stat-cell"><div class="v" style="color:var(--ink-3)">2</div><div class="l">离线</div></div></div>
+  <div class="sec-title">📍 点位列表 <span class="tagline">部分演示点位</span></div>
+  <div class="list-card">${rows}</div>
+`;
+renderApp({title:'我的相机点位', back:true, body});
+</script>
+</body>
+</html>

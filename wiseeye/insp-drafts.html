@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 离线草稿箱</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 离线草稿箱</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const KEY='we_drafts';
+const SEED=[
+  {id:1, act:'确认违规', t:'未佩戴安全帽 · 五和社区', time:'08:41', net:'弱网'},
+  {id:2, act:'标记误报', t:'明火/烟火 · 甘坑社区', time:'08:37', net:'断网'}
+];
+function load(){ try{const s=localStorage.getItem(KEY); return s?JSON.parse(s):SEED;}catch(e){return SEED;} }
+function save(a){ localStorage.setItem(KEY,JSON.stringify(a)); }
+function render(){
+  const list=load();
+  const rows=list.length?list.map(d=>`
+    <div class="list-row"><div class="li">📤</div><div class="lt">${d.act}<small>${d.t} · ${d.time} · ${d.net}暂存</small></div>
+      <span class="status-pill PENDING" style="margin:0">待同步</span></div>`).join('')
+    :'<div class="empty"><div class="e-ic">✅</div>暂无待补传草稿</div>';
+  const body=`
+    <div class="principle"><span class="i">📥</span><span><b>离线草稿箱</b>：弱网/断网时确认或误报操作自动暂存，联网后按幂等键自动补传，避免重复确认与数据丢失。</span></div>
+    <div class="sec-title">待同步操作 <span class="tagline">${list.length} 条</span></div>
+    <div class="list-card">${rows}</div>
+    ${list.length?'<button class="btn btn-primary" onclick="sync()">🔄 立即联网补传</button>':''}`;
+  renderApp({title:'离线草稿箱', back:true, body});
+}
+function sync(){ toast('正在按幂等键补传…'); setTimeout(()=>{ save([]); toast('已全部补传完成'); render(); }, 900); }
+render();
+</script>
+</body>
+</html>

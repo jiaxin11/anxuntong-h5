@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 企业档案</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 企业风险档案</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+/* 由工地聚合企业风险 */
+const EMAP={};
+SITES.forEach(s=>{ EMAP[s.ent]=EMAP[s.ent]||{ent:s.ent,sites:0,risk:0,lvl:'green'}; const e=EMAP[s.ent]; e.sites++; e.risk=Math.max(e.risk,s.risk); e.lvl = e.risk>=80?'red':e.risk>=60?'yellow':'green'; });
+const ENTS=Object.values(EMAP).sort((a,b)=>b.risk-a.risk);
+const rows=ENTS.map((e,i)=>`
+  <div class="card" style="margin-bottom:10px" onclick="toast('演示：企业档案（信用代码/在建工地/历史违规/约谈记录）')">
+    <div style="display:flex;align-items:center;gap:8px"><div class="rk ${i===0?'top':''}" style="width:22px;height:22px;border-radius:7px;background:${i===0?'var(--major)':'var(--surface-2)'};color:${i===0?'#fff':'var(--ink-2)'};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">${i+1}</div>
+      <b style="font-size:14px;flex:1">${e.ent}</b><span class="lvl-pill ${e.lvl}">${e.lvl==='red'?'高危':e.lvl==='yellow'?'预警':'正常'}</span></div>
+    <div style="display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-top:8px">
+      <span>在建工地 <b style="color:var(--ink)">${e.sites}</b></span><span>风险峰值 <b style="color:${e.lvl==='red'?'var(--major)':'var(--ink)'}">${e.risk}</b></span></div></div>`).join('');
+const body=`
+  <div class="principle"><span class="i">🏢</span><span><b>企业风险档案</b>：按在建工地聚合企业风险，支持约谈预警与信用挂钩；申诉成功的记录不计入评分。</span></div>
+  ${rows}
+  <button class="btn btn-primary" onclick="toast('演示：导出企业风险档案 PDF')">⬇ 导出企业风险档案</button>
+`;
+renderApp({title:'企业风险档案', back:true, body});
+</script>
+</body>
+</html>
