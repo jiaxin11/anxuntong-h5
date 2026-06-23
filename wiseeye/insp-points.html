@@ -23,7 +23,7 @@ const POINTS=[
   ['HK-球机-塔吊','坂田·雪象·主体结构','AI 智能检测',false]
 ];
 const rows=POINTS.map(p=>`
-  <div class="list-row" onclick="toast('演示：查看「${p[0]}」实时画面')">
+  <div class="list-row" onclick="go('camera.html?n=${encodeURIComponent(p[0])}')">
     <div class="li">📷</div><div class="lt">${p[0]}<small>${p[1]}</small></div>
     <div class="lv">${p[2]}<br><span class="dot-on" style="background:${p[3]?'var(--ok)':'var(--ink-3)'}"></span>${p[3]?'在线':'离线'}</div>
     <div class="chev">›</div></div>`).join('');

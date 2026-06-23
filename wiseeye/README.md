@@ -44,6 +44,10 @@
 | `admin-meeting.html` | 一会三卡：执行率 / 未召开 / 执行记录 |
 | `admin-enterprise.html` | 企业风险档案：聚合企业风险 / 约谈预警 |
 | `admin-system.html` | 系统管理：用户角色 / 分组 / 在线率 / 操作日志 |
+| `admin-users.html` | 用户与角色：RBAC + 街道隔离 / 启停 / 新增 |
+| `admin-offline.html` | 设备在线率监控：离线超2h列表 + 通知街道（P1-4） |
+| `site-detail.html?id=` | 工地详情：五维评分 / 设备 / 班前会 / 近期报警（巡查端、监管端通用） |
+| `camera.html?n=` | 摄像头实时画面：直播占位 + PTZ 云台 + 预置位 + 抓拍 |
 
 > 监管端总览页提供「管理功能」入口区，进入上述各管理页。
 
