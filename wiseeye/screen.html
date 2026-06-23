@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>慧眼建安 · 监管大屏</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--cy:#28d0e6;--cy2:#1aa3c4;--red:#ff5a4d;--yel:#ffb24d;--grn:#33d98a;--pnl:rgba(14,42,74,.55);--bd:rgba(40,208,230,.28)}
+html,body{height:100%;background:#04101d;font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;overflow:hidden}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 700px at 50% 0%,#0a2440,#04101d 70%)}
+#stage{width:1920px;height:1080px;transform-origin:center;color:#cfe6f5;position:relative;padding:22px 26px}
+/* header */
+.hd{display:flex;align-items:center;height:74px;border-bottom:1px solid var(--bd);margin-bottom:18px}
+.hd .lg{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--cy),var(--cy2));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#04101d;margin-right:16px}
+.hd h1{font-size:30px;font-weight:800;letter-spacing:3px;color:#eaf6ff;text-shadow:0 0 18px rgba(40,208,230,.5)}
+.hd .sub{font-size:13px;color:var(--cy);letter-spacing:2px;margin-top:3px;opacity:.9}
+.hd .r{margin-left:auto;text-align:right}
+.hd .r .t{font-size:28px;font-weight:700;color:#eaf6ff;font-variant-numeric:tabular-nums}
+.hd .r .d{font-size:13px;color:#7fb6d6;margin-top:3px}
+/* grid */
+.cols{display:flex;gap:18px;height:940px}
+.col{display:flex;flex-direction:column;gap:18px}
+.col.l,.col.r{width:480px}
+.col.c{flex:1}
+.panel{background:var(--pnl);border:1px solid var(--bd);border-radius:14px;padding:16px 18px;position:relative;box-shadow:inset 0 0 30px rgba(40,208,230,.05)}
+.panel::before{content:'';position:absolute;left:14px;top:0;width:40px;height:2px;background:var(--cy);box-shadow:0 0 10px var(--cy)}
+.pt{font-size:16px;font-weight:700;color:#eaf6ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pt .tag{margin-left:auto;font-size:12px;color:var(--cy);font-weight:400}
+/* kpi */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.kpi{background:linear-gradient(160deg,rgba(40,208,230,.12),rgba(40,208,230,.02));border:1px solid var(--bd);border-radius:12px;padding:16px;text-align:center}
+.kpi .v{font-size:40px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--cy);text-shadow:0 0 18px rgba(40,208,230,.5)}
+.kpi.red .v{color:var(--red);text-shadow:0 0 18px rgba(255,90,77,.5)}
+.kpi.grn .v{color:var(--grn);text-shadow:0 0 18px rgba(51,217,138,.5)}
+.kpi.yel .v{color:var(--yel)}
+.kpi .l{font-size:13px;color:#9fc6df;margin-top:9px}
+/* bars */
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.bar .bl{width:60px;font-size:13px;color:#9fc6df}
+.bar .bt{flex:1;height:14px;background:rgba(255,255,255,.06);border-radius:7px;overflow:hidden}
+.bar .bt i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,var(--cy2),var(--cy));box-shadow:0 0 10px rgba(40,208,230,.4)}
+.bar .bv{width:54px;text-align:right;font-size:13px;color:#eaf6ff;font-weight:700}
+/* map */
+.map{flex:1;position:relative;overflow:hidden}
+.map .canvas{position:absolute;inset:46px 18px 18px}
+.map .gl{position:absolute;inset:0;background-image:linear-gradient(rgba(40,208,230,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(40,208,230,.07) 1px,transparent 1px);background-size:54px 54px}
+.node{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:default}
+.node .pt2{width:12px;height:12px;border-radius:50%;margin:0 auto}
+.node .nm{font-size:11px;color:#bcd9ec;margin-top:4px;white-space:nowrap}
+.node.red .pt2{background:var(--red);box-shadow:0 0 0 4px rgba(255,90,77,.18)}
+.node.yellow .pt2{background:var(--yel);box-shadow:0 0 0 4px rgba(255,178,77,.16)}
+.node.green .pt2{background:var(--grn);box-shadow:0 0 0 4px rgba(51,217,138,.14)}
+.node.red .pt2{animation:ping 1.6s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,90,77,.5)}100%{box-shadow:0 0 0 16px rgba(255,90,77,0)}}
+.legend{position:absolute;right:18px;top:14px;display:flex;gap:16px;font-size:13px;color:#9fc6df}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%}
+/* trend */
+.trend{height:200px}
+/* scroll list */
+.feed{height:330px;overflow:hidden;position:relative}
+.feed .track{position:absolute;left:0;right:0;animation:roll 22s linear infinite}
+.feed:hover .track{animation-play-state:paused}
+@keyframes roll{0%{top:0}100%{top:-50%}}
+.fitem{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px dashed rgba(40,208,230,.18)}
+.fitem .ic{width:30px;height:30px;border-radius:8px;background:rgba(40,208,230,.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.fitem .ft{flex:1;min-width:0}
+.fitem .ft .a{font-size:14px;color:#eaf6ff;font-weight:600}
+.fitem .ft .b{font-size:11.5px;color:#7fb6d6;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fitem .lv{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.lv.major{background:rgba(255,90,77,.18);color:var(--red)} .lv.serious{background:rgba(255,178,77,.18);color:var(--yel)} .lv.general{background:rgba(51,217,138,.16);color:var(--grn)}
+/* rank */
+.rk{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px dashed rgba(40,208,230,.18)}
+.rk:last-child{border-bottom:0}
+.rk .no{width:24px;height:24px;border-radius:7px;background:rgba(40,208,230,.12);color:var(--cy);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.rk .no.top{background:var(--red);color:#fff}
+.rk .rn{flex:1;font-size:14px;color:#eaf6ff}
+.rk .rn small{display:block;color:#7fb6d6;font-size:11px;margin-top:2px}
+.rk .rs{font-size:20px;font-weight:800;color:var(--red)}
+.donut-wrap{display:flex;align-items:center;gap:18px}
+.donut-wrap .lg{flex:1;font-size:13px;color:#9fc6df;line-height:2}
+.back{position:absolute;right:26px;top:26px;z-index:5;background:rgba(40,208,230,.12);border:1px solid var(--bd);color:var(--cy);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage"></div></div>
+<script src="assets/app.js"></script>
+<script>
+const STREETS=['坂田','布吉','南湾','龙城','龙岗','横岗','园山','宝龙','坪地','吉华','平湖','坂雪','五联','甘坑','岗头','南岭','丹竹头','木棉湾','大芬','西埔','回龙','爱联','嶂背','新生','同乐','保安','龙东','坪西','宝荷'];
+function lvlOf(i){ const r=(i*37)%100; return r<14?'red':r<42?'yellow':'green'; }
+const redN=STREETS.filter((s,i)=>lvlOf(i)==='red').length, yelN=STREETS.filter((s,i)=>lvlOf(i)==='yellow').length;
+
+/* 地图节点散布 */
+function nodes(){ let s=7; const rnd=()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};
+  return STREETS.map((nm,i)=>{ const lv=lvlOf(i); const x=8+rnd()*84, y=10+rnd()*80;
+    return `<div class="node ${lv}" style="left:${x}%;top:${y}%"><div class="pt2"></div><div class="nm">${nm}</div></div>`; }).join(''); }
+
+/* 实时报警滚动（复制两份做无缝循环） */
+function feedItems(){ const base=alarms.filter(a=>a.status!=='MISJUDGE').concat(alarms.filter(a=>a.status!=='MISJUDGE'));
+  return base.map(a=>{const t=TYPES[a.type];return `<div class="fitem"><div class="ic">${t.icon}</div><div class="ft"><div class="a">${t.name}</div><div class="b">${a.street} · ${a.site} · ${a.time}</div></div><span class="lv ${t.level}">${LVNAME[t.level]}</span></div>`;}).join(''); }
+
+const bars=[['安全帽',128,640],['烟火',12,210],['反光衣',86,520],['闯入',41,180],['攀爬',33,150]];
+const barHTML=bars.map(([l,v,d])=>{const r=Math.round(v/d*100);return `<div class="bar"><div class="bl">${l}</div><div class="bt"><i style="width:${r}%"></i></div><div class="bv">${v}/${d}</div></div>`;}).join('');
+
+const ranked=[...SITES].sort((a,b)=>b.risk-a.risk).slice(0,5);
+const rankHTML=ranked.map((s,i)=>`<div class="rk"><div class="no ${i===0?'top':''}">${i+1}</div><div class="rn">${s.name}<small>${s.street} · ${s.ent}</small></div><div class="rs" style="color:${s.lvl==='red'?'var(--red)':'var(--yel)'}">${s.risk}</div></div>`).join('');
+
+/* 趋势折线 */
+function trend(){ const pts=[42,55,38,61,49,72,58]; const w=420,h=130,max=80;
+  const xs=pts.map((v,i)=>20+i*((w-40)/(pts.length-1)));
+  const ys=pts.map(v=>h-12-(v/max)*(h-30));
+  const line=xs.map((x,i)=>`${x.toFixed(0)},${ys[i].toFixed(0)}`).join(' ');
+  const area=`20,${h-12} `+line+` ${w-20},${h-12}`;
+  const dots=xs.map((x,i)=>`<circle cx="${x.toFixed(0)}" cy="${ys[i].toFixed(0)}" r="3.5" fill="#28d0e6"/>`).join('');
+  const labels=['周一','周二','周三','周四','周五','周六','今日'].map((l,i)=>`<text x="${xs[i].toFixed(0)}" y="${h-1}" fill="#7fb6d6" font-size="11" text-anchor="middle">${l}</text>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">
+    <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#28d0e6" stop-opacity=".35"/><stop offset="1" stop-color="#28d0e6" stop-opacity="0"/></linearGradient></defs>
+    <polygon points="${area}" fill="url(#ar)"/><polyline points="${line}" fill="none" stroke="#28d0e6" stroke-width="2.5"/>${dots}${labels}</svg>`; }
+
+const pct=92;
+
+document.getElementById('stage').innerHTML=`
+  <div class="back" onclick="location.href='admin-overview.html'">‹ 返回管理端</div>
+  <div class="hd">
+    <div class="lg">慧</div>
+    <div><h1>慧眼建安 · 龙岗区建筑工地 AI 智能监管大屏</h1><div class="sub">WiseEye-JA REGULATORY SCREEN · 7000 路 AI 摄像头</div></div>
+    <div class="r"><div class="t" id="bclock">09:41:00</div><div class="d">数据更新：实时（15s 轮询）</div></div>
+  </div>
+  <div class="cols">
+    <div class="col l">
+      <div class="panel"><div class="pt">核心指标 <span class="tag">今日</span></div>
+        <div class="kpis">
+          <div class="kpi red"><div class="v">268</div><div class="l">今日报警</div></div>
+          <div class="kpi grn"><div class="v">243</div><div class="l">已确认</div></div>
+          <div class="kpi red"><div class="v">${redN}</div><div class="l">高风险工地</div></div>
+          <div class="kpi"><div class="v">94%</div><div class="l">设备在线率</div></div>
+        </div></div>
+      <div class="panel" style="flex:1"><div class="pt">违规类型分布</div>${barHTML}</div>
+      <div class="panel"><div class="pt">确认闭环</div>
+        <div class="donut-wrap">
+          <svg width="120" height="120" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3.4"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#33d98a" stroke-width="3.4" stroke-dasharray="${pct} ${100-pct}" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="20" text-anchor="middle" font-size="8" font-weight="800" fill="#eaf6ff">${pct}%</text></svg>
+          <div class="lg">确认率 <b style="color:#eaf6ff">${pct}%</b><br>整改闭环率 88%<br>班前会执行率 86%</div>
+        </div></div>
+    </div>
+    <div class="col c">
+      <div class="panel map">
+        <div class="pt">龙岗区工地风险分布 <span class="tag">29 街道</span></div>
+        <div class="legend"><span><i style="background:var(--red)"></i>高 ${redN}</span><span><i style="background:var(--yel)"></i>预警 ${yelN}</span><span><i style="background:var(--grn)"></i>正常 ${STREETS.length-redN-yelN}</span></div>
+        <div class="canvas"><div class="gl"></div>${nodes()}</div>
+      </div>
+      <div class="panel trend"><div class="pt">近 7 日报警趋势</div>${trend()}</div>
+    </div>
+    <div class="col r">
+      <div class="panel"><div class="pt">实时报警动态 <span class="tag">相机自动推送</span></div>
+        <div class="feed"><div class="track">${feedItems()}</div></div></div>
+      <div class="panel" style="flex:1"><div class="pt">高风险工地 TOP5</div>${rankHTML}</div>
+    </div>
+  </div>
+`;
+
+function fit(){ const st=document.getElementById('stage'); const s=Math.min(innerWidth/1920, innerHeight/1080); st.style.transform='scale('+s+')'; }
+addEventListener('resize',fit); fit();
+function clock(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); const el=document.getElementById('bclock'); if(el)el.textContent=`${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; }
+clock(); setInterval(clock,1000);
+</script>
+</body>
+</html>
