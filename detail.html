@@ -39,6 +39,10 @@ const body = `
     <div class="kv"><div class="k">触发时间</div><div class="v">今日 ${a.time}</div></div>
     <div class="kv"><div class="k">AI置信度</div><div class="v">${a.conf}%</div></div>
   </div>
+  <div style="display:flex;gap:8px;margin:-2px 2px 12px">
+    <button class="btn btn-line" style="flex:1;padding:9px" onclick="go('evidence.html?id=${a.id}')">🎬 AI 证据链</button>
+    <button class="btn btn-line" style="flex:1;padding:9px" onclick="location.href='tel:13800138000'">📞 拨打负责人</button>
+  </div>
   <div class="card">
     <div class="field">
       <label>隐患等级（影响整改时限，可修改）</label>
@@ -59,7 +63,7 @@ const body = `
     </div>
   </div>
   <div class="detail-actions">
-    <button class="btn btn-line" style="flex:.9" onclick="rejectAlert()">驳回（误报）</button>
+    <button class="btn btn-line" style="flex:.9" onclick="rejectAlert()">标记误报</button>
     <button class="btn btn-primary" style="flex:1.5" onclick="confirmAlert()">✓ 确认违规属实</button>
   </div>
 `;
@@ -79,7 +83,8 @@ function confirmAlert(){
 }
 function rejectAlert(){
   a.status='rejected'; saveAlarms(alarms);
-  go('alarms.html');
+  toast('已标记误报 · 同点位同类型连续 3 次将自动延长冷却（误报闭环）');
+  setTimeout(()=>go('alarms.html'), 1200);
 }
 </script>
 </body>

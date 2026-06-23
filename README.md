@@ -27,6 +27,12 @@
 | `me.html` | 我的（重置演示数据 / 退出登录） |
 | `points.html` | 我的相机点位（点位列表 / 在线状态） |
 | `interval.html` | 报警推送间隔（推送频率设置，本地持久） |
+| `evidence.html?id=` | AI 证据链（前后30s视频 / 截图 / 时间戳 / 签章，P1-5） |
+| `meeting.html` | 班前会（发起 / 签到二维码 / GPS≤50m / 记录） |
+| `risk.html` | 风险预警（风险地图红黄绿 / 评分排行 / AI政策建议） |
+| `report.html` | 报表中心（日/周/月报 + 街道导出 Excel·PDF） |
+| `config.html` | 运营参数配置中心（冷却/聚合/静音/SLA/GPS，P1-6） |
+| `appeal.html` | 误报申诉（提交→7工作日复核，P1-2） |
 | `verify.html` | 证件核验（OCR + 官方核验） |
 | `qa.html` | AI 法规问答（带出处） |
 | `laws.html` | 法规库（搜索 + 分类） |

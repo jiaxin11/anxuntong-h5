@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小快灵 · 班前会</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">小快灵 H5 · 班前会</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const KEY='axt_meeting_v1';
+function loadMeeting(){ try{return JSON.parse(localStorage.getItem(KEY))||null;}catch(e){return null;} }
+function saveMeeting(m){ localStorage.setItem(KEY, JSON.stringify(m)); }
+
+const SITE = '坂田街道 · 五和社区 · 沿街商铺装修工程';
+
+/* 伪二维码：基于种子生成 13×13 点阵 */
+function qrSVG(seed){
+  let s=0; for(const c of seed) s=(s*31+c.charCodeAt(0))>>>0;
+  const n=13, cell=100/n; let rects='';
+  const rnd=()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; };
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+    const corner=(x<3&&y<3)||(x>=n-3&&y<3)||(x<3&&y>=n-3);
+    if(corner||rnd()>0.5) rects+=`<rect x="${(x*cell).toFixed(2)}" y="${(y*cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}" fill="#1C2733"/>`;
+  }
+  return `<svg viewBox="0 0 100 100">${rects}</svg>`;
+}
+
+function render(){
+  const m = loadMeeting();
+  let body;
+  if(!m){
+    body = `
+      <div class="principle"><span class="i">📋</span>
+        <span><b>班前会</b>：发起后生成签到二维码（1 小时有效），班组成员扫码并经 <b>GPS≤50m</b> 校验完成签到，PTZ 摄像头自动抓拍留证。</span></div>
+      <div class="card">
+        <div class="kv"><div class="k">工地</div><div class="v">${SITE}</div></div>
+        <div class="kv"><div class="k">日期</div><div class="v">今日 ${new Date().toLocaleDateString('zh-CN')}</div></div>
+        <div class="kv"><div class="k">主持人</div><div class="v">${currentUser()}</div></div>
+        <div class="kv" style="border:0"><div class="k">留证方式</div><div class="v">PTZ 预置位抓拍 + GPS 签到</div></div>
+      </div>
+      <button class="btn btn-ok" onclick="start()">发起今日班前会</button>
+      <button class="btn btn-line" style="margin-top:10px" onclick="toast('演示：查看历史班前会记录')">查看历史记录 ›</button>
+    `;
+  } else {
+    const signed = m.signs.length;
+    const officer = m.signs.some(s=>s.role==='专职安全员');
+    const signRows = m.signs.map(s=>`
+      <div class="sign-row"><div class="av">${s.role==='专职安全员'?'🦺':'👷'}</div>
+        <div class="sn">${s.name}<small>${s.role}</small></div>
+        <span class="gps">✓ GPS ${s.gps}m</span></div>`).join('');
+    body = `
+      <div class="demo-flag">📋 ${SITE} · 今日班前会进行中</div>
+      <div class="card" style="text-align:center">
+        <div class="qr-box">${qrSVG(m.code)}</div>
+        <div style="font-size:13px;font-weight:600">扫码签到</div>
+        <div style="font-size:11px;color:var(--ink-3);margin-top:4px">二维码 1 小时有效 · 需在工地 50m 范围内</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-cell"><div class="v" style="color:var(--primary)">${signed}</div><div class="l">已签到</div></div>
+        <div class="stat-cell"><div class="v" style="color:${officer?'var(--ok)':'var(--major)'}">${officer?'已到场':'未到场'}</div><div class="l">专职安全员</div></div>
+      </div>
+      <div class="card">
+        <div class="sec-title" style="margin-top:0">签到记录<span class="tagline" style="margin-left:6px">GPS 校验通过</span></div>
+        ${signRows}
+      </div>
+      <button class="btn btn-primary" onclick="addSign()">＋ 模拟新增一名签到</button>
+      <button class="btn btn-ok" style="margin-top:10px" onclick="finish()">结束并归档班前会</button>
+    `;
+  }
+  renderApp({title:'班前会', back:true, body});
+}
+
+function start(){
+  saveMeeting({code:'MEET-'+Date.now(), startAt:Date.now(), signs:[
+    {name:currentUser(), role:'带班负责人', gps:8},
+    {name:'李建国', role:'专职安全员', gps:15},
+    {name:'陈伟', role:'班组长', gps:22}
+  ]});
+  toast('班前会已发起，二维码已生成'); render();
+}
+const POOL=[['赵强','钢筋工'],['孙磊','架子工'],['周勇','电工'],['吴刚','木工'],['郑斌','普工']];
+function addSign(){
+  const m=loadMeeting(); if(!m) return;
+  const p=POOL[m.signs.length%POOL.length];
+  m.signs.push({name:p[0],role:p[1],gps:10+Math.floor(Math.random()*38)});
+  saveMeeting(m); toast('新增签到：'+p[0]); render();
+}
+function finish(){ localStorage.removeItem(KEY); toast('班前会已归档（记入一会三卡）'); setTimeout(render,500); }
+
+render();
+</script>
+</body>
+</html>

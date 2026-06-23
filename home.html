@@ -58,6 +58,14 @@ const body = `
     <button onclick="go('drafts.html')"><div class="qi g">📥</div><div class="ql">草稿箱</div></button>
   </div>
 
+  <div class="sec-title" style="margin-top:4px">🏢 班组与监管 <span class="tagline">新版能力</span></div>
+  <div class="quick">
+    <button onclick="go('meeting.html')"><div class="qi b">📋</div><div class="ql">班前会</div></button>
+    <button onclick="go('risk.html')"><div class="qi a">⚠️</div><div class="ql">风险预警</div></button>
+    <button onclick="go('report.html')"><div class="qi c">📈</div><div class="ql">报表中心</div></button>
+    <button onclick="go('config.html')"><div class="qi g">⚙️</div><div class="ql">运营配置</div></button>
+  </div>
+
   <div class="sec-title">🔴 实时报警动态 <span class="tagline">相机自动推送</span><span class="more" onclick="go('alarms.html?f=pending')">查看全部 ›</span></div>
   ${homeList}
 `;

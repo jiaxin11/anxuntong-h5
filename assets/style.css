@@ -299,6 +299,51 @@ body{
 .seg button{flex:1;border:0;background:transparent;color:var(--ink-2);font-size:13px;font-weight:600;padding:8px 0;border-radius:8px;cursor:pointer;transition:.15s}
 .seg button.on{background:#fff;color:var(--primary);box-shadow:var(--shadow)}
 
+/* ====== 新需求原型页（证据链/班前会/风险/报表/配置/申诉） ====== */
+.lvl-pill{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 8px;border-radius:20px;color:#fff;vertical-align:middle}
+.lvl-pill.red{background:var(--major)} .lvl-pill.yellow{background:var(--serious)} .lvl-pill.green{background:var(--ok)}
+.qr-box{width:166px;height:166px;margin:6px auto 12px;padding:10px;border-radius:14px;background:#fff;box-shadow:var(--shadow)}
+.qr-box svg{display:block;width:100%;height:100%}
+.vid{position:relative;border-radius:12px;overflow:hidden;background:#0d1418}
+.vid .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px;color:rgba(255,255,255,.92);cursor:pointer;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.vid-scrub{height:6px;border-radius:3px;background:var(--line);margin:12px 2px 6px;position:relative}
+.vid-scrub i{position:absolute;left:0;top:0;bottom:0;width:50%;background:var(--ai);border-radius:3px}
+.vid-scrub .kf{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--ai);left:50%;margin-left:-6px}
+.evi-row{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.evi-row:last-child{border-bottom:0}
+.evi-row .ic{width:30px;height:30px;border-radius:9px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.evi-row .tx{flex:1;font-size:13px;font-weight:500}
+.evi-row .tx small{display:block;color:var(--ink-3);font-size:11px;font-weight:400;margin-top:2px;line-height:1.5}
+.evi-row .ok{color:var(--ok);font-size:15px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.rank-row:last-child{border-bottom:0}
+.rank-row .rk{width:22px;height:22px;border-radius:7px;background:var(--surface-2);color:var(--ink-2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rank-row .rk.top{background:var(--major);color:#fff}
+.rank-row .nm{flex:1;font-size:13px;font-weight:600}
+.rank-row .nm small{display:block;color:var(--ink-3);font-size:11px;font-weight:400;margin-top:2px}
+.rank-row .sc{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.advice{background:var(--ai-soft);border:1px solid #BFE2EC;border-radius:12px;padding:12px;margin-bottom:10px}
+.advice:last-child{margin-bottom:0}
+.advice .at{font-size:13px;font-weight:700;color:var(--primary-dark);display:flex;align-items:center;gap:6px}
+.advice .at .u{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;color:#fff;background:var(--serious)}
+.advice .ac{font-size:12px;color:var(--ink-2);line-height:1.7;margin-top:7px}
+.cfg-row{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}
+.cfg-row:last-child{border-bottom:0}
+.cfg-row .cn{flex:1;font-size:13px;font-weight:600}
+.cfg-row .cn small{display:block;color:var(--ink-3);font-size:11px;font-weight:400;margin-top:2px}
+.cfg-row input{width:90px;text-align:center;border:1px solid var(--line);border-radius:8px;padding:8px 6px;font-size:13px;font-weight:700;color:var(--primary);background:#fff}
+.risk-legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin:2px 0 12px;justify-content:center}
+.risk-legend span{display:inline-flex;align-items:center;gap:5px}
+.risk-legend i{width:10px;height:10px;border-radius:50%}
+.gis{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;padding:4px 2px}
+.gis .d{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:600;opacity:.92}
+.sign-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.sign-row:last-child{border-bottom:0}
+.sign-row .av{width:30px;height:30px;border-radius:50%;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sign-row .sn{flex:1;font-size:13px;font-weight:500}
+.sign-row .sn small{display:block;color:var(--ink-3);font-size:11px;font-weight:400;margin-top:1px}
+.sign-row .gps{font-size:11px;color:var(--ok);font-weight:600}
+
 /* bottom nav */
 .tabbar{height:64px;background:rgba(255,255,255,.98);border-top:1px solid var(--line);display:flex;z-index:45;padding-bottom:6px;flex-shrink:0}
 .tabbar button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;color:var(--ink-3);cursor:pointer;font-weight:500;position:relative}
