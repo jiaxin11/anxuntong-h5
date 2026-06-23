@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · AI 法规问答</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · AI 法规问答</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const QA={
+  '未戴安全帽如何处置？':['应立即制止作业并要求佩戴；属较大隐患，限 5 日内整改并复查闭环。','《建筑施工安全检查标准》JGJ 59-2011 第3.11.3条'],
+  '动火作业有什么要求？':['须办理动火审批、清理周边易燃物、配置灭火器材并设监护人，严禁无证动火。','《建设工程施工现场消防安全技术规范》GB 50720'],
+  '临边洞口防护标准？':['临边、洞口应设置稳固防护栏杆或盖板，并设置警示标志，禁止擅自拆除。','《建筑施工高处作业安全技术规范》JGJ 80']
+};
+let msgs=[{role:'ai',text:'你好，我是慧眼建安法规助手。可就施工安全法规、判据即问即答，答案均带《条文》出处。试试下面的常见问题👇'}];
+function render(){
+  const list=msgs.map(m=> m.role==='q'?`<div class="qa-q">${m.text}</div>`:`<div class="qa-a">${m.text}${m.src?`<div class="src">📖 ${m.src}</div>`:''}</div>`).join('');
+  const chips=Object.keys(QA).map(q=>`<div class="chip" onclick="ask('${q}')">${q}</div>`).join('');
+  const body=`
+    <div style="margin-bottom:12px">${list}</div>
+    <div class="sec-title">常见问题</div>
+    <div class="chips">${chips}</div>`;
+  renderApp({title:'AI 法规问答', back:true, body});
+}
+function ask(q){ const a=QA[q]; msgs.push({role:'q',text:q}); msgs.push({role:'ai',text:a[0],src:a[1]}); render(); }
+render();
+</script>
+</body>
+</html>

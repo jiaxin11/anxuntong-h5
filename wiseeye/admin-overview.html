@@ -29,6 +29,16 @@ const body=`
     <div class="stat-cell c-pend"><div class="v">${redN}</div><div class="l">高风险工地</div></div>
     <div class="stat-cell c-ai"><div class="v">94%</div><div class="l">设备在线率</div></div>
   </div>
+  <div class="quick">
+    <button onclick="go('admin-sites.html')"><div class="qi">🏗️</div><div class="ql">工地管理</div></button>
+    <button onclick="go('admin-alarms.html')"><div class="qi">🔔</div><div class="ql">报警管理</div></button>
+    <button onclick="go('admin-sla.html')"><div class="qi">⏱️</div><div class="ql">巡查SLA</div></button>
+    <button onclick="go('admin-meeting.html')"><div class="qi">📋</div><div class="ql">一会三卡</div></button>
+    <button onclick="go('admin-enterprise.html')"><div class="qi">🏢</div><div class="ql">企业档案</div></button>
+    <button onclick="go('admin-system.html')"><div class="qi">🛠️</div><div class="ql">系统管理</div></button>
+    <button onclick="go('admin-report.html')"><div class="qi">📈</div><div class="ql">报表中心</div></button>
+    <button onclick="go('admin-config.html')"><div class="qi">⚙️</div><div class="ql">运营配置</div></button>
+  </div>
   <div class="card">
     <div class="sec-title" style="margin-top:0">违规类型分布<span class="tagline" style="margin-left:6px">今日</span></div>
     <div class="bars">${bar('安全帽',128,640)}${bar('烟火',12,210)}${bar('反光衣',86,520)}${bar('闯入',41,180)}</div>

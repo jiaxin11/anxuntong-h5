@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 整改任务</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 整改任务</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const RECT='we_rectified_v1';
+function rectSet(){ try{return new Set(JSON.parse(localStorage.getItem(RECT))||[]);}catch(e){return new Set();} }
+function rectSave(s){ localStorage.setItem(RECT, JSON.stringify([...s])); }
+function render(){
+  const done=rectSet();
+  const list=alarms.filter(a=>a.status==='CONFIRMED');
+  const cards=list.length?list.map(a=>{ const t=TYPES[a.type]; const ok=done.has(a.id);
+    return `<div class="card" style="margin-bottom:11px">
+      <div style="display:flex;align-items:center;gap:8px"><b style="font-size:14px;flex:1">${t.name}</b>
+        <span class="lvl-pill ${t.level==='major'?'red':t.level==='serious'?'yellow':'green'}">${LVNAME[t.level]} · 限 ${DEADLINE[t.level]} 天</span></div>
+      <div class="muted tiny" style="margin:6px 0 9px">📷 ${a.dev} · 📍 ${a.site}</div>
+      ${ok?'<button class="btn btn-line" disabled>✓ 已提交整改，待复查闭环</button>':`<button class="btn btn-ok" onclick="rect(${a.id})">📷 提交整改（拍照+说明）</button>`}</div>`;
+  }).join('') : '<div class="empty"><div class="e-ic">✅</div>暂无待整改任务</div>';
+  const body=`
+    <div class="seg"><button class="on">待整改 ${list.filter(a=>!done.has(a.id)).length}</button><button onclick="toast('演示：已整改/已复查')">已整改 ${[...done].length}</button></div>
+    ${cards}`;
+  renderApp({title:'整改任务', back:true, body});
+}
+function rect(id){ const s=rectSet(); s.add(id); rectSave(s); toast('整改已提交（含现场照片与说明），等待复查闭环'); render(); }
+render();
+</script>
+</body>
+</html>

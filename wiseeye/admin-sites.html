@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 工地管理</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 工地管理</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+let f='all';
+const F=[['all','全部'],['red','高危'],['yellow','预警'],['green','正常']];
+function render(){
+  const list=SITES.filter(s=>f==='all'||s.lvl===f);
+  const chips=`<div class="chips" style="margin-bottom:12px">${F.map(([k,l])=>`<div class="chip ${f===k?'on':''}" onclick="setF('${k}')">${l}</div>`).join('')}</div>`;
+  const rows=list.map(s=>`
+    <div class="card" style="margin-bottom:10px" onclick="toast('演示：工地详情（设备/风险分/近期报警）')">
+      <div style="display:flex;align-items:center;gap:8px"><b style="font-size:14px;flex:1">${s.name}</b><span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':s.lvl==='yellow'?'预警':'正常'}</span></div>
+      <div class="muted tiny" style="margin:5px 0 8px">📍 ${s.street} · ${s.ent}</div>
+      <div style="display:flex;gap:14px;font-size:12px;color:var(--ink-2)">
+        <span>风险分 <b style="color:var(--ink)">${s.risk}</b></span>
+        <span><span class="dot-on" style="background:${s.online===s.dev?'var(--ok)':'var(--serious)'}"></span>设备 ${s.online}/${s.dev}</span></div></div>`).join('');
+  const body=`
+    ${chips}
+    <div class="demo-flag">🏗️ 共 ${SITES.length} 个工地 · 当前筛选 ${list.length} 个</div>
+    ${rows}
+    <div style="display:flex;gap:10px"><button class="btn btn-line" style="flex:1" onclick="toast('演示：Excel 批量导入工地+设备绑定')">⬆ 导入</button><button class="btn btn-primary" style="flex:1" onclick="toast('演示：导出工地清单 Excel')">⬇ 导出</button></div>`;
+  renderApp({title:'工地管理', back:true, body});
+}
+function setF(k){ f=k; render(); }
+render();
+</script>
+</body>
+</html>

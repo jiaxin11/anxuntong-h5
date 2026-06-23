@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 报警推送间隔</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 报警推送间隔</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const KEY='we_push_interval';
+const OPTIONS=[['实时','有报警立即推送（默认）'],['每 5 分钟','聚合后每 5 分钟推送一次'],['每 15 分钟','聚合后每 15 分钟推送一次'],['每 30 分钟','聚合后每 30 分钟推送一次'],['仅工作时间','08:00–18:00 推送，其余静默']];
+function curr(){ return localStorage.getItem(KEY)||'实时'; }
+function pick(v){ localStorage.setItem(KEY,v); toast('已设为「'+v+'」'); render(); }
+function render(){
+  const c=curr();
+  const rows=OPTIONS.map(([v,d])=>`<div class="list-row" onclick="pick('${v}')"><div class="lt">${v}<small>${d}</small></div><div style="width:22px;height:22px;border-radius:50%;border:2px solid ${v===c?'var(--primary)':'var(--line)'};background:${v===c?'var(--primary)':'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">${v===c?'✓':''}</div></div>`).join('');
+  const body=`
+    <div class="principle"><span class="i">⏱</span><span>调低推送频率可减少打扰；<b>重大/较大</b>级别报警在任意模式下仍会实时提醒。</span></div>
+    <div class="sec-title">选择报警推送间隔</div>
+    <div class="list-card">${rows}</div>`;
+  renderApp({title:'报警推送间隔', back:true, body});
+}
+render();
+</script>
+</body>
+</html>
