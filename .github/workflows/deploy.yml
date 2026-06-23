@@ -21,14 +21,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Prepare SSH key & known_hosts
+      - name: Install sshpass & known_hosts
         run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p 22 -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy via rsync
+      - name: Deploy via rsync (password auth)
+        env:
+          SSHPASS: ${{ secrets.DEPLOY_PASSWORD }}
         run: |
           rsync -avz --delete \
             --exclude='.git' \
@@ -36,9 +37,5 @@ jobs:
             --exclude='CONVERSATION.md' \
             --exclude='README.md' \
             --exclude='.gitignore' \
-            -e "ssh -i ~/.ssh/deploy_key -p 22 -o StrictHostKeyChecking=yes" \
+            -e "sshpass -e ssh -p 22 -o StrictHostKeyChecking=yes" \
             ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
-
-      - name: Cleanup
-        if: always()
-        run: rm -f ~/.ssh/deploy_key
