@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小快灵 · 误报申诉</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">小快灵 H5 · 误报申诉</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const KEY='axt_appeals_v1';
+function load(){ try{return JSON.parse(localStorage.getItem(KEY))||DEFAULT;}catch(e){return DEFAULT;} }
+function save(a){ localStorage.setItem(KEY, JSON.stringify(a)); }
+const DEFAULT=[
+  {id:9001, type:'疑似烟火', org:'布吉街道 · 甘坑社区', date:'06-20', reason:'现场为焊接作业产生火花，已做好动火审批与监护', status:'APPROVED'},
+  {id:9002, type:'未佩戴安全帽', org:'坂田街道 · 五和社区', date:'06-21', reason:'画面中为佩戴遮阳帽的检查人员，非作业工人', status:'PENDING'}
+];
+
+const STA={PENDING:['待复核','var(--serious)'],APPROVED:['申诉通过','var(--ok)'],REJECTED:['申诉驳回','var(--ink-3)']};
+
+function render(){
+  const list=load();
+  const rows=list.map(a=>`
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <b style="font-size:13px">${a.type}</b>
+        <span class="lvl-pill" style="background:${STA[a.status][1]}">${STA[a.status][0]}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--ink-3)">${a.date}</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--ink-3);margin:5px 0 7px">📍 ${a.org}</div>
+      <div style="font-size:12.5px;color:var(--ink-2);line-height:1.6">申诉理由：${a.reason}</div>
+      ${a.status==='APPROVED'?'<div style="font-size:11.5px;color:var(--ok);margin-top:7px">✓ 复核通过，该记录不计入风险评分</div>':''}
+      ${a.status==='PENDING'?'<div style="font-size:11.5px;color:var(--serious);margin-top:7px">⏳ 已受理，7 个工作日内人工复核</div>':''}
+    </div>`).join('');
+
+  const body=`
+    <div class="principle"><span class="i">⚖</span>
+      <span><b>误报申诉</b>（工地负责人）。对判定为误报或有异议的报警提交申诉，平台 <b>7 个工作日</b>内人工复核；申诉成功的记录<b>不计入企业风险评分</b>。</span></div>
+    <div class="card">
+      <div class="sec-title" style="margin-top:0">发起新申诉</div>
+      <div class="field">
+        <label>选择报警</label>
+        <select class="area" id="apAlarm" style="height:auto;min-height:0;padding:11px">
+          <option>未佩戴安全帽 · 坂田五和 · 今日09:32</option>
+          <option>临边作业危险 · 坂田岗头 · 今日09:18</option>
+          <option>吸烟行为 · 布吉甘坑 · 今日08:55</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>申诉理由</label>
+        <textarea class="area" id="apReason" placeholder="请说明判定误报的依据，如：现场为合规作业 / 识别对象非工人 / 已具备相应防护或审批…"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitAppeal()">提交申诉</button>
+    </div>
+    <div class="sec-title">我的申诉记录</div>
+    ${rows}
+  `;
+  renderApp({title:'误报申诉', back:true, body});
+}
+
+function submitAppeal(){
+  const reason=document.getElementById('apReason').value.trim();
+  if(!reason){ toast('请填写申诉理由'); return; }
+  const sel=document.getElementById('apAlarm').value;
+  const list=load();
+  list.unshift({id:Date.now(), type:sel.split(' · ')[0], org:sel.split(' · ')[1], date:'今日', reason, status:'PENDING'});
+  save(list); toast('申诉已提交，7 个工作日内复核'); render();
+}
+
+render();
+</script>
+</body>
+</html>

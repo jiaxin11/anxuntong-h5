@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小快灵 · 运营参数配置</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">小快灵 H5 · 运营参数配置中心</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+const KEY='axt_configs_v1';
+const DEFAULTS={
+  'cooldown.default_ttl':300,
+  'cooldown.misjudge_ttl':1800,
+  'notify.aggregate_window':600,
+  'silent.start':22,
+  'silent.end':6,
+  'sla.normal':1800,
+  'sla.critical':600,
+  'gps.threshold_m':50
+};
+const META=[
+  ['cooldown.default_ttl','平台兜底冷却','同摄像头同类型去重秒数','秒'],
+  ['cooldown.misjudge_ttl','误报闭环冷却','连续误报后临时延长的冷却','秒'],
+  ['notify.aggregate_window','聚合推送窗口','按工地合并推送的时间窗','秒'],
+  ['silent.start','静音开始','夜间免打扰开始时刻','时'],
+  ['silent.end','静音结束','夜间免打扰结束时刻','时'],
+  ['sla.normal','一般报警 SLA','一般报警确认时限','秒'],
+  ['sla.critical','严重报警 SLA','严重报警确认时限','秒'],
+  ['gps.threshold_m','班前会 GPS 阈值','签到允许的距工地半径','米']
+];
+function load(){ try{return {...DEFAULTS,...(JSON.parse(localStorage.getItem(KEY))||{})};}catch(e){return {...DEFAULTS};} }
+let cfg=load();
+
+const rows=META.map(([k,name,desc,unit])=>`
+  <div class="cfg-row">
+    <div class="cn">${name}<small>${desc}（${k}）</small></div>
+    <input id="cfg_${k.replace(/\./g,'_')}" type="number" value="${cfg[k]}">
+    <span style="font-size:11px;color:var(--ink-3);width:18px">${unit}</span>
+  </div>`).join('');
+
+const body=`
+  <div class="principle"><span class="i">⚙</span>
+    <span><b>运营参数配置中心</b>（仅管理员）。冷却、聚合、静音、SLA、GPS 等参数在线可调，保存后经 Redis pub/sub 通知各服务<b>热加载</b>，无需重启；变更写入操作日志。</span></div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">运营参数</div>
+    ${rows}
+  </div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-line" style="flex:1" onclick="resetCfg()">恢复默认</button>
+    <button class="btn btn-primary" style="flex:1.4" onclick="saveCfg()">保存并热加载</button>
+  </div>
+`;
+
+renderApp({title:'运营参数配置', back:true, body});
+
+function saveCfg(){
+  const out={};
+  META.forEach(([k])=>{ const el=document.getElementById('cfg_'+k.replace(/\./g,'_')); out[k]=Number(el.value); });
+  localStorage.setItem(KEY, JSON.stringify(out)); cfg=out;
+  toast('已保存，配置已下发各服务热加载（写入操作日志）');
+}
+function resetCfg(){ localStorage.removeItem(KEY); cfg=load();
+  META.forEach(([k])=>{ document.getElementById('cfg_'+k.replace(/\./g,'_')).value=cfg[k]; });
+  toast('已恢复默认参数'); }
+</script>
+</body>
+</html>

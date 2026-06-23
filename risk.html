@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>小快灵 · 风险预警</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">小快灵 H5 · 风险预警</div>
+<div id="app"></div>
+
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+
+/* 龙岗 29 街道工地点位（演示，红黄绿） */
+const STREETS=['坂田','布吉','南湾','龙城','龙岗','横岗','园山','宝龙','坪地','吉华','平湖','坂雪','五联','甘坑','岗头','南岭','丹竹头','木棉湾','大芬','西埔','回龙','爱联','嶂背','新生','同乐','保安','龙东','宝龙二','坪西'];
+function lvlOf(i){ const r=(i*37)%100; return r<14?'red':r<42?'yellow':'green'; }
+const gis = STREETS.map((s,i)=>{
+  const lv=lvlOf(i); const c=lv==='red'?'var(--major)':lv==='yellow'?'var(--serious)':'var(--ok)';
+  return `<div class="d" style="background:${c}" onclick="toast('${s}街道：${lv==='red'?'高':lv==='yellow'?'中':'低'}风险')">${s}</div>`;
+}).join('');
+const redN=STREETS.filter((s,i)=>lvlOf(i)==='red').length;
+const yelN=STREETS.filter((s,i)=>lvlOf(i)==='yellow').length;
+
+/* 高风险工地排行（五维评分：报警/严重度/整改/班前会/在线率） */
+const RANK=[
+  ['五和社区 · 沿街商铺装修','坂田街道',87,'red'],
+  ['丹竹头 · 基坑支护工程','南湾街道',81,'red'],
+  ['岗头 · 旧楼加固工程','坂田街道',74,'yellow'],
+  ['甘坑 · 充电设施安装','布吉街道',68,'yellow'],
+  ['南岭 · 外墙清洗作业','南湾街道',61,'yellow']
+];
+const rankHTML=RANK.map((r,i)=>`
+  <div class="rank-row"><div class="rk ${i===0?'top':''}">${i+1}</div>
+    <div class="nm">${r[0]}<small>${r[1]} · 五维评分</small></div>
+    <span class="sc" style="color:${r[3]==='red'?'var(--major)':'var(--serious)'}">${r[2]}</span>
+    <span class="lvl-pill ${r[3]}">${r[3]==='red'?'高危':'预警'}</span></div>`).join('');
+
+const body = `
+  <div class="seg">
+    <button class="on" onclick="toast('风险地图')">风险地图</button>
+    <button onclick="go('report.html')">趋势报表</button>
+    <button onclick="toast('演示：企业风险档案')">企业档案</button>
+  </div>
+
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">龙岗区工地风险分布<span class="tagline" style="margin-left:6px">29 街道</span></div>
+    <div class="risk-legend">
+      <span><i style="background:var(--major)"></i>高风险 ${redN}</span>
+      <span><i style="background:var(--serious)"></i>预警 ${yelN}</span>
+      <span><i style="background:var(--ok)"></i>正常 ${STREETS.length-redN-yelN}</span>
+    </div>
+    <div class="gis">${gis}</div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">高风险工地 TOP5<span class="tagline" style="margin-left:6px">五维评分</span></div>
+    ${rankHTML}
+  </div>
+
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">🤖 AI 政策建议<span class="tagline" style="margin-left:6px">Claude 生成</span></div>
+    <div class="advice">
+      <div class="at">⚠ 五和社区装修工程持续高发<span class="u">紧急</span></div>
+      <div class="ac">近 7 日该工地未佩戴安全帽报警 18 起、整改率仅 52%，且连续 2 日未召开班前会。建议：① 责令企业落实班前安全交底；② 增派巡查复核；③ 纳入本周重点督办名单。</div>
+    </div>
+    <div class="advice">
+      <div class="at">📉 临边/基坑类违规上升<span class="u" style="background:var(--info)">中</span></div>
+      <div class="ac">基坑支护工程临边作业危险报警环比上升 23%。建议下发临边防护专项提示，并对相关企业进行约谈预警。</div>
+    </div>
+  </div>
+
+  <button class="btn btn-line" onclick="toast('演示：一键下发督办通知至对应街道')">下发重点督办通知</button>
+`;
+
+renderApp({title:'风险预警', back:true, body});
+</script>
+</body>
+</html>
