@@ -64,6 +64,7 @@ function requireLogin(){ if(!localStorage.getItem('we_user')) location.href='log
 function currentUser(){ return localStorage.getItem('we_user')||'王师傅'; }
 function currentRole(){ return localStorage.getItem('we_role')||'insp'; }
 function logout(){ localStorage.removeItem('we_user'); localStorage.removeItem('we_role'); location.href='login.html'; }
+function confirmLogout(){ if(confirm('确定退出登录？')) logout(); }
 
 /* ---------- 施工场景 SVG（报警缩略图/大图） ---------- */
 function sceneSVG(){
@@ -112,7 +113,7 @@ function renderApp(o){
   <div class="phone">
     <div class="notch"></div>
     <div class="statusbar"><span id="clock">9:41</span><span class="r">●●●  5G  <span class="bat">82</span></span></div>
-    <div class="appbar">${back}<div class="brand">慧</div><h1>${o.title}${sub}</h1>${o.tab?'<div class="bell" onclick="toast(\'演示：消息通知\')">🔔<span class="dot"></span></div>':''}</div>
+    <div class="appbar">${back}<div class="brand">慧</div><h1>${o.title}${sub}</h1>${o.tab?'<div class="bell" onclick="toast(\'演示：消息通知\')">🔔<span class="dot"></span></div>':''}<div class="logout" onclick="confirmLogout()" title="退出登录">⏻</div></div>
     <div class="body"><div class="${padCls}">${o.body}</div></div>
     ${tabbar}
     <div class="toast" id="toast"></div>
