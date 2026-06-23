@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>慧眼建安 WiseEye-JA</title>
+</head>
+<body>
+<script>
+const HOME={insp:'insp-home.html',site:'site-home.html',admin:'admin-overview.html'};
+const u=localStorage.getItem('we_user'), r=localStorage.getItem('we_role')||'insp';
+location.replace(u ? (HOME[r]||'insp-home.html') : 'login.html');
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 本工地报警</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 本工地报警</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const RECT='we_rectified_v1';
+function rectSet(){ try{return new Set(JSON.parse(localStorage.getItem(RECT))||[]);}catch(e){return new Set();} }
+function rectSave(s){ localStorage.setItem(RECT, JSON.stringify([...s])); }
+
+function render(){
+  const done=rectSet();
+  const list=alarms.filter(a=>a.status!=='PENDING' || true); // 本工地全部
+  const cards=list.map(a=>{ const t=TYPES[a.type];
+    let action='';
+    if(a.status==='CONFIRMED'){
+      action = done.has(a.id)
+        ? `<button class="btn btn-line" style="padding:9px" disabled>✓ 已提交整改，待复查</button>`
+        : `<button class="btn btn-ok" style="padding:10px" onclick="rectify(${a.id})">📷 提交整改（拍照+说明）</button>`;
+    } else if(a.status==='MISJUDGE'){
+      action = `<button class="btn btn-line" style="padding:9px" onclick="appeal(${a.id})">⚖ 提交误报申诉</button>`;
+    } else {
+      action = `<div class="muted tiny" style="text-align:center;padding:8px">⏳ 待巡查员复核确认</div>`;
+    }
+    return `<div class="card" style="margin-bottom:11px">
+      <div style="display:flex;gap:11px">${alarmThumb(a)}
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">${t.name}<span class="badge ${t.level}" style="margin-left:6px">${LVNAME[t.level]}</span></div>
+          <div class="muted tiny" style="margin-top:5px;line-height:1.7">📷 ${a.dev}<br>🕓 ${a.time} · <span class="status-pill ${a.status}" style="margin:0">${ST[a.status]}</span></div></div></div>
+      <div style="margin-top:11px">${action}</div></div>`;
+  }).join('');
+  const body=`
+    <div class="principle"><span class="i">🛠️</span><span><b>本工地报警</b>：巡查员确认的违规需<b>拍照+说明</b>提交整改；对判定为误报或有异议的可<b>申诉</b>（7 工作日复核，成功不计入企业风险评分）。</span></div>
+    ${cards}`;
+  renderApp({title:'本工地报警', role:'site', tab:'alarms', body});
+}
+function rectify(id){ const s=rectSet(); s.add(id); rectSave(s); toast('整改已提交（含现场照片与说明），等待复查闭环'); render(); }
+function appeal(id){ toast('误报申诉已提交，7 个工作日内人工复核'); }
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 工地首页</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 工地负责人首页</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const SITE='坂田街道 · 五和社区 · 沿街商铺装修工程';
+const pend=alarms.filter(a=>a.status==='PENDING').length;
+const state= pend>=4?'danger':pend>=1?'warn':'ok';
+const STATE={ok:['🟢 正常','今日无未处理隐患，保持安全生产'],warn:['🟡 预警','存在待处理隐患，请尽快整改'],danger:['🔴 危险','多条未处理隐患，请立即处置']};
+const body=`
+  <div class="demo-flag">🦺 ${SITE}</div>
+  <div class="safe-banner ${state}">
+    <div class="st">今日工地安全状态</div>
+    <div class="bg">${STATE[state][0]}</div>
+    <div class="sm">${STATE[state][1]}</div>
+  </div>
+  <div class="stat-grid c4">
+    <div class="stat-cell c-vio"><div class="v">${pend}</div><div class="l">待处理</div></div>
+    <div class="stat-cell c-ok"><div class="v">${alarms.filter(a=>a.status==='CONFIRMED').length}</div><div class="l">整改中</div></div>
+    <div class="stat-cell c-ai"><div class="v">6/6</div><div class="l">设备在线</div></div>
+    <div class="stat-cell"><div class="v">✓</div><div class="l">今日班前会</div></div>
+  </div>
+  <div class="quick">
+    <button onclick="go('site-meeting.html')"><div class="qi">📋</div><div class="ql">班前会</div></button>
+    <button onclick="go('site-alarms.html')"><div class="qi">🔔</div><div class="ql">本工地报警</div></button>
+    <button onclick="toast('演示：摄像头列表与位置地图')"><div class="qi">📷</div><div class="ql">设备</div></button>
+    <button onclick="toast('演示：整改任务清单')"><div class="qi">🛠️</div><div class="ql">整改任务</div></button>
+  </div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">📢 今日提示</div>
+    <div class="muted tiny" style="line-height:2">
+      · 上午 08:00 早高峰，请督促工人佩戴安全帽与反光衣<br>
+      · 基坑、临边作业区域已布设 AI 摄像头，违规将自动报警<br>
+      · 如对报警有异议，可在「本工地报警」中提交<b>误报申诉</b>
+    </div>
+  </div>
+`;
+renderApp({title:'工地安全', sub:'负责人 · '+currentUser(), role:'site', tab:'home', body});
+</script>
+</body>
+</html>

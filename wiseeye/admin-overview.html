@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>慧眼建安 · 总览</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="stage-label">慧眼建安 · 监管总览</div>
+<div id="app"></div>
+<script src="assets/app.js"></script>
+<script>
+requireLogin();
+const STREETS=['坂田','布吉','南湾','龙城','龙岗','横岗','园山','宝龙','坪地','吉华','平湖','坂雪','五联','甘坑','岗头','南岭','丹竹头','木棉湾','大芬','西埔','回龙','爱联','嶂背','新生','同乐','保安','龙东','宝龙二','坪西'];
+function lvlOf(i){ const r=(i*37)%100; return r<14?'red':r<42?'yellow':'green'; }
+const gis=STREETS.map((s,i)=>{const lv=lvlOf(i);const c=lv==='red'?'var(--major)':lv==='yellow'?'var(--serious)':'var(--ok)';return `<div class="d" style="background:${c}" onclick="toast('${s}街道：${lv==='red'?'高':lv==='yellow'?'中':'低'}风险')">${s}</div>`;}).join('');
+const redN=STREETS.filter((s,i)=>lvlOf(i)==='red').length, yelN=STREETS.filter((s,i)=>lvlOf(i)==='yellow').length;
+
+const bar=(label,vio,det)=>{const r=Math.round(vio/det*100);const c=r<=15?'var(--ok)':r<=30?'var(--serious)':'var(--major)';return `<div class="bar-row"><div class="bl">${label}</div><div class="bt"><i style="width:${r}%;background:${c}"></i><span>${vio}/${det}</span></div><div class="vio-rate" style="color:${c}">${r}%</div></div>`;};
+
+const ranked=SITES.filter(s=>s.lvl!=='green').sort((a,b)=>b.risk-a.risk).slice(0,5);
+const rankHTML=ranked.map((s,i)=>`<div class="rank-row"><div class="rk ${i===0?'top':''}">${i+1}</div><div class="nm">${s.name}<small>${s.street} · ${s.ent}</small></div><span class="sc" style="color:${s.lvl==='red'?'var(--major)':'var(--serious)'}">${s.risk}</span><span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':'预警'}</span></div>`).join('');
+
+const body=`
+  <div class="stat-grid c4">
+    <div class="stat-cell c-vio"><div class="v">268</div><div class="l">今日报警</div></div>
+    <div class="stat-cell c-ok"><div class="v">243</div><div class="l">已确认</div></div>
+    <div class="stat-cell c-pend"><div class="v">${redN}</div><div class="l">高风险工地</div></div>
+    <div class="stat-cell c-ai"><div class="v">94%</div><div class="l">设备在线率</div></div>
+  </div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">违规类型分布<span class="tagline" style="margin-left:6px">今日</span></div>
+    <div class="bars">${bar('安全帽',128,640)}${bar('烟火',12,210)}${bar('反光衣',86,520)}${bar('闯入',41,180)}</div>
+  </div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">龙岗区工地风险分布<span class="tagline" style="margin-left:6px">29 街道</span></div>
+    <div class="risk-legend"><span><i style="background:var(--major)"></i>高 ${redN}</span><span><i style="background:var(--serious)"></i>预警 ${yelN}</span><span><i style="background:var(--ok)"></i>正常 ${STREETS.length-redN-yelN}</span></div>
+    <div class="gis">${gis}</div>
+  </div>
+  <div class="card" style="margin-bottom:0">
+    <div class="sec-title" style="margin-top:0">高风险工地 TOP5<span class="more" onclick="go('admin-risk.html')">风险预警 ›</span></div>
+    ${rankHTML}
+  </div>
+`;
+renderApp({title:'监管总览', sub:currentUser()+' · 住建局', role:'admin', tab:'ov', body});
+</script>
+</body>
+</html>
