@@ -113,7 +113,7 @@ function renderApp(o){
   <div class="phone">
     <div class="notch"></div>
     <div class="statusbar"><span id="clock">9:41</span><span class="r">●●●  5G  <span class="bat">82</span></span></div>
-    <div class="appbar">${back}<div class="brand">慧</div><h1>${o.title}${sub}</h1>${o.tab?'<div class="bell" onclick="toast(\'演示：消息通知\')">🔔<span class="dot"></span></div>':''}<div class="logout" onclick="confirmLogout()" title="退出登录">⏻</div></div>
+    <div class="appbar">${back}<div class="brand">慧</div><h1>${o.title}${sub}</h1>${o.tab?'<div class="bell" onclick="toast(\'演示：消息通知\')">🔔<span class="dot"></span></div>':''}<div class="logout" onclick="confirmLogout()" title="退出登录" role="button" aria-label="退出登录"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div></div>
     <div class="body"><div class="${padCls}">${o.body}</div></div>
     ${tabbar}
     <div class="toast" id="toast"></div>
