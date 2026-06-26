@@ -20,7 +20,7 @@ const redN=STREETS.filter((s,i)=>lvlOf(i)==='red').length, yelN=STREETS.filter((
 const bar=(label,vio,det)=>{const r=Math.round(vio/det*100);const c=r<=15?'var(--ok)':r<=30?'var(--serious)':'var(--major)';return `<div class="bar-row"><div class="bl">${label}</div><div class="bt"><i style="width:${r}%;background:${c}"></i><span>${vio}/${det}</span></div><div class="vio-rate" style="color:${c}">${r}%</div></div>`;};
 
 const ranked=SITES.filter(s=>s.lvl!=='green').sort((a,b)=>b.risk-a.risk).slice(0,5);
-const rankHTML=ranked.map((s,i)=>`<div class="rank-row"><div class="rk ${i===0?'top':''}">${i+1}</div><div class="nm">${s.name}<small>${s.street} · ${s.ent}</small></div><span class="sc" style="color:${s.lvl==='red'?'var(--major)':'var(--serious)'}">${s.risk}</span><span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':'预警'}</span></div>`).join('');
+const rankHTML=ranked.map((s,i)=>`<div class="rank-row" style="cursor:pointer" onclick="go('site-detail.html?id=${s.id}')"><div class="rk ${i===0?'top':''}">${i+1}</div><div class="nm">${s.name}<small>${s.street} · ${s.ent}</small></div><span class="sc" style="color:${s.lvl==='red'?'var(--major)':'var(--serious)'}">${s.risk}</span><span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':'预警'}</span><span class="chev">›</span></div>`).join('');
 
 const body=`
   <div class="stat-grid c4">
