@@ -39,6 +39,10 @@ body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-ser
 .appbar .logout svg{display:block;width:18px;height:18px}
 .appbar .logout:active{background:rgba(255,255,255,.15)}
 
+/* ---------- 轻提示 Toast ---------- */
+.toast{position:absolute;left:50%;bottom:92px;transform:translateX(-50%) translateY(10px);max-width:78%;background:rgba(22,32,43,.94);color:#fff;font-size:13px;line-height:1.45;text-align:center;padding:10px 18px;border-radius:13px;box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:90}
+.toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
 .body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
 .body::-webkit-scrollbar{width:0}
 .page{padding:14px 14px 20px;animation:fade .25s ease}

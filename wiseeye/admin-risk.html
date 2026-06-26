@@ -13,7 +13,7 @@
 <script>
 requireLogin();
 const ranked=[...SITES].sort((a,b)=>b.risk-a.risk);
-const rankHTML=ranked.map((s,i)=>`<div class="rank-row"><div class="rk ${i===0?'top':''}">${i+1}</div><div class="nm">${s.name}<small>${s.street} · ${s.ent}</small></div><span class="sc" style="color:${s.lvl==='red'?'var(--major)':s.lvl==='yellow'?'var(--serious)':'var(--ok)'}">${s.risk}</span><span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':s.lvl==='yellow'?'预警':'正常'}</span></div>`).join('');
+const rankHTML=ranked.map((s,i)=>`<div class="rank-row" style="cursor:pointer" onclick="go('site-detail.html?id=${s.id}')"><div class="rk ${i===0?'top':''}">${i+1}</div><div class="nm">${s.name}<small>${s.street} · ${s.ent}</small></div><span class="sc" style="color:${s.lvl==='red'?'var(--major)':s.lvl==='yellow'?'var(--serious)':'var(--ok)'}">${s.risk}</span><span class="lvl-pill ${s.lvl}">${s.lvl==='red'?'高危':s.lvl==='yellow'?'预警':'正常'}</span><span class="chev">›</span></div>`).join('');
 const adv=AI_ADVICES.map(a=>`<div class="advice"><div class="at">⚠ ${a.t}<span class="u" style="background:${a.uc}">${a.u}</span></div><div class="ac">${a.c}</div></div>`).join('');
 const body=`
   <div class="card">
